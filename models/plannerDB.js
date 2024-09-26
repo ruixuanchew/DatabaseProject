@@ -6,7 +6,7 @@ const Planner = require('./planner');
 class PlannerDB {
 
     getAllPlans(request, respond) {
-        const sql = "SELECT * FROM planner";
+        const sql = "SELECT * FROM planners";
         db.query(sql, (error, result) => {
             if (error) {
                 throw error;
@@ -26,7 +26,7 @@ class PlannerDB {
             request.body.date
         );
 
-        const sql = "INSERT INTO planner (user_id, recipe_id, title, description, time, date) VALUES (?, ?, ?, ?, ?, ?)";
+        const sql = "INSERT INTO planners (user_id, recipe_id, title, description, time, date) VALUES (?, ?, ?, ?, ?, ?)";
         const values = [
             plannerObject.getUserId(),
             plannerObject.getRecipeId(),
@@ -55,7 +55,7 @@ class PlannerDB {
             request.body.date
         );
 
-        const sql = "UPDATE planner SET user_id = ?, recipe_id = ?, title = ?, description = ?, time = ?, date = ? WHERE planner_id = ?";
+        const sql = "UPDATE planners SET user_id = ?, recipe_id = ?, title = ?, description = ?, time = ?, date = ? WHERE planner_id = ?";
         const values = [
             plannerObject.getUserId(),
             plannerObject.getRecipeId(),
@@ -76,7 +76,7 @@ class PlannerDB {
 
     deletePlan(request, respond) {
         const plannerId = request.params.id;
-        const sql = "DELETE FROM planner WHERE planner_id = ?";
+        const sql = "DELETE FROM planners WHERE planner_id = ?";
 
         db.query(sql, plannerId, (error, result) => {
             if (error) {

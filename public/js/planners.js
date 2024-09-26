@@ -1,4 +1,4 @@
-// Get the current date
+// Get and display the current date
 const currentDate = new Date();
 const currentDayElem = document.getElementById('currentDay');
 
@@ -8,47 +8,104 @@ function updateCurrentDay(date) {
     currentDayElem.textContent = date.toLocaleDateString('en-US', options);
 }
 
-// Initialize with today's date
-updateCurrentDay(currentDate);
-
-// Move to the previous day when clicking the left arrow
-document.getElementById('prevDay').addEventListener('click', () => {
+// Function to move to the previous day
+function prevDay() {
     currentDate.setDate(currentDate.getDate() - 1);
     updateCurrentDay(currentDate);
-});
+}
 
-// Move to the next day when clicking the right arrow
-document.getElementById('nextDay').addEventListener('click', () => {
+// Function to move to the next day
+function nextDay() {
     currentDate.setDate(currentDate.getDate() + 1);
     updateCurrentDay(currentDate);
-});
+}
+
+// Initialize with today's date
+function initializeDate() {
+    updateCurrentDay(currentDate);
+    document.getElementById('prevDay').addEventListener('click', prevDay);
+    document.getElementById('nextDay').addEventListener('click', nextDay);
+}
 
 // Modal handling
 const modal = document.getElementById('addPlanModal'); // Use the correct modal ID
 const addButtons = document.querySelectorAll('.add-btn'); // Select all add buttons
-const backdrop = document.createElement('div'); // Create backdrop element
-backdrop.className = 'modal-backdrop'; // Set class for styling
-document.body.appendChild(backdrop); // Append to body
+const backdrop = createBackdrop();
 
-// Open the modal when any add button is clicked
-addButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        modal.classList.add('show'); // Show the modal
-        modal.style.display = 'block'; // Ensure the modal is displayed
-        backdrop.classList.add('show'); // Show the backdrop
-    });
-});
+// Function to create the backdrop element
+function createBackdrop() {
+    const backdropElem = document.createElement('div');
+    backdropElem.className = 'modal-backdrop'; // Set class for styling
+    document.body.appendChild(backdropElem);
+    return backdropElem;
+}
 
-// Close the modal when the user clicks the close button
-modal.querySelector('.btn-close').addEventListener('click', () => {
+// Function to open the modal
+function openModal() {
+    modal.classList.add('show');
+    modal.style.display = 'block';
+    backdrop.classList.add('show');
+}
+
+// Function to close the modal
+function closeModal() {
     modal.style.display = 'none';
-    backdrop.classList.remove('show'); // Remove the backdrop
-});
+    backdrop.classList.remove('show');
+}
 
-// Close the modal when the user clicks outside of the modal
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-        backdrop.classList.remove('show'); // Remove the backdrop
-    }
-});
+// Function to handle clicks on "Add" buttons
+function initializeAddButtonListeners() {
+    addButtons.forEach(button => {
+        button.addEventListener('click', function(){
+            const time = this.getAttribute('data-time');
+            openModal();
+            document.getElementById('savePlanButton').addEventListener('click', function() {
+                addPlan(time);
+            }, { once: true });
+        });
+    });
+
+    modal.querySelector('.btn-close').addEventListener('click', closeModal);
+    
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+}
+
+// Function to submit the plan form
+    function addPlan(time) {
+    const currentDayElem = document.getElementById('currentDay').textContent;
+    console.log(time, currentDayElem);
+    const recipe = {
+        user_id: 1,
+        recipe_id: 3,
+        title: document.getElementById('planTitle').value,
+        description: document.getElementById('planDescription').value,
+        time: time,
+        date: currentDayElem
+    };
+
+    fetch('/planners', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(recipe)
+    })
+    .then(response => response.json())
+    .then(() => {
+        // Reset form or perform actions after success
+        // document.getElementById('recipeForm').reset();
+    });
+}
+
+// Initialize the app
+function initializeApp() {
+    initializeDate();
+    initializeAddButtonListeners();
+}
+
+// Call to initialize everything when the page loads
+initializeApp();

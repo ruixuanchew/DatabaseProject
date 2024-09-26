@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const connection = require('./js/db');  // Import the db connection
 const routeRecipe = require('./routes/routeRecipe');
+const routePlanner = require('./routes/routePlanner');
+const routeUser = require('./routes/routeUser');
+const routeNutrition = require('./routes/routeNutrition');
 
 const app = express();
 const port = 3000;
@@ -18,6 +21,9 @@ app.get('/', (req, res) => {
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(bodyParser.json());
 routeRecipe.routeRecipe(app);
+routePlanner.routePlanner(app)
+routeUser.routeUser(app)
+routeNutrition.routeNutrition(app)
 
 function gotoIndex(req, res) {
   res.sendFile(__dirname + "/" + startPage);

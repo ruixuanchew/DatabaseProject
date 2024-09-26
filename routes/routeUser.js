@@ -1,17 +1,17 @@
 "use strict";
 
 const UserDB = require('../models/userDB');
-const plannerDBObject = new UserDB();
+const userDBObject = new UserDB();
 
 function routeUser(app) {
-    app.route('/user')
-       .post(plannerDBObject.addUser)
-       .get(plannerDBObject.getAllUsers);
+    app.route('/users')
+       .post(userDBObject.addUser)
+       .get(userDBObject.getAllUsers);
     
-    app.route('/recipes/:id')
+    app.route('/users/:id')
     //   .get(plannerDBObject.getRecipeById)
-       .put(plannerDBObject.updateUser)
-       .delete(plannerDBObject.deleteUser);
+       .put(userDBObject.updateUser)
+       .delete(userDBObject.deleteUser);
 }
 
 module.exports = { routeUser };
