@@ -1,5 +1,5 @@
 let recipes = [];
-const recipesPerPage = 30;
+const recipesPerPage = 32;
 let currentPage = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,6 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchInput').addEventListener('input', filterRecipes);
 });
 
+// Future for optimisation 
+// function getRecipes(){
+//     fetch(`/recipes/${currentPage}/${recipesPerPage}`, {
+//         method: 'GET'
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         recipes = data; // Store fetched recipes
+//         console.log(recipes);
+//         displayRecipes(currentPage);
+//         setupPagination();
+//     })
+//     .catch(error => console.error('Error fetching recipes:', error));
+// }
 function getRecipes() {
     fetch('/recipes')  
         .then(response => response.json())
@@ -77,19 +91,63 @@ function setupPagination() {
     paginationContainer.innerHTML = ''; // Clear any previous content
 
     const totalPages = Math.ceil(recipes.length / recipesPerPage);
+    const maxButtonsToShow = 10; // Maximum number of page buttons to display
+    const ellipsis = '...';
 
-    for (let i = 1; i <= totalPages; i++) {
+    // Helper function to create a pagination button
+    const createButton = (pageNum, isActive = false) => {
         const button = document.createElement('a');
         button.classList.add('py-3', 'px-5', 'paginationButton');
-        button.innerText = i;
+        if (isActive) {
+            button.classList.add('active'); // Add active class for the current page
+        }
+        button.innerText = pageNum;
         button.href = '#'; // Prevent default link behavior
         button.addEventListener('click', (e) => {
             e.preventDefault(); // Prevent page jump
-            currentPage = i; // Update current page
+            currentPage = pageNum; // Update current page
             displayRecipes(currentPage); // Display recipes for the current page
+            
+            // Update pagination display
+            setupPagination();
         });
+        return button;
+    };
 
-        paginationContainer.appendChild(button);
+    // Show first page button
+    paginationContainer.appendChild(createButton(1, currentPage === 1));
+
+    if (totalPages > maxButtonsToShow) {
+        // Check if currentPage is near the start
+        if (currentPage < 5) {
+            // Show pages 2-10
+            for (let i = 2; i <= Math.min(maxButtonsToShow, totalPages); i++) {
+                paginationContainer.appendChild(createButton(i, currentPage === i));
+            }
+        } else if (currentPage > totalPages - 4) {
+            // Show pages totalPages-9 to totalPages-1
+            for (let i = Math.max(totalPages - maxButtonsToShow + 1, 2); i < totalPages; i++) {
+                paginationContainer.appendChild(createButton(i, currentPage === i));
+            }
+        } else {
+            // Show pages currentPage-4 to currentPage+5
+            for (let i = currentPage - 4; i <= currentPage + 5; i++) {
+                if (i > 1 && i < totalPages) {
+                    paginationContainer.appendChild(createButton(i, currentPage === i));
+                }
+            }
+        }
+
+        // Add ellipsis
+        paginationContainer.appendChild(document.createTextNode(ellipsis));
+
+        // Show the last page button
+        paginationContainer.appendChild(createButton(totalPages, currentPage === totalPages));
+    } else {
+        // If total pages are less than or equal to maxButtonsToShow, show all page numbers
+        for (let i = 2; i <= totalPages; i++) {
+            paginationContainer.appendChild(createButton(i, currentPage === i));
+        }
     }
 }
 

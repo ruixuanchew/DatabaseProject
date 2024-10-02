@@ -15,6 +15,58 @@ class RecipeDB {
         });
     }
 
+    // For future reference when optimising 
+    countAllRecipes(request, respond) {
+        console.log('Copunt all recipes');
+        const sql = "SELECT COUNT(*) as total FROM recipes";
+        db.query(sql, (error, result) => {
+            if (error) {
+                return respond.status(500).json({ error: "Database query error" });
+            }
+            console.log(result[0].total)
+            respond.json(result[0].total); // Send back the total count
+        });
+    }
+
+    // Do in the future for optimisation (:D)
+    getRecipesByPage(request, respond) {
+        console.log('Gets here');
+        const page = parseInt(request.params.page) || 1;  
+        const limit = parseInt(request.params.limit) || 32; 
+        const offset = (page - 1) * limit;
+        console.log(page, limit);
+
+        const sql = `
+            WITH recipe_pages AS (
+                SELECT *, ROW_NUMBER() OVER (ORDER BY recipe_id) as row_num
+                FROM recipes
+            )
+            SELECT *
+            FROM recipe_pages
+            WHERE row_num BETWEEN ? AND ?;`;
+   
+        const startRow = offset + 1;  
+        const endRow = offset + limit;
+    
+        db.query(sql, [startRow, endRow], (error, result) => {
+            if (error) {
+                return respond.status(500).json({ error: "Database query error" });
+            }
+            respond.json(result);
+        });
+    }
+    
+
+    getRecipeIdAndName(request, respond) {
+        const sql = "SELECT recipe_id, name FROM recipes";
+        db.query(sql, (error, result) => {
+            if (error) {
+                throw error;
+            }
+            respond.json(result);
+        });
+    }
+
     getRecipeById(request, respond) {
         const recipeId = request.params.id;
         const sql = "SELECT * FROM recipes WHERE recipe_id = ?";

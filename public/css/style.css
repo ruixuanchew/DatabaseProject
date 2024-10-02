@@ -327,18 +327,14 @@
     margin-right: 5px;
 }
 
-.paginationButton:focus, 
-.paginationButton:active, 
-.paginationButton:visited {
-    outline: none;
-    box-shadow: none; /* Remove the green box-shadow */
-    border: none;
+.paginationButton {
+    color: var(--primary); /* Default color for pagination buttons */
+    text-decoration: none; /* Remove underline */
 }
 
-/* Optional: Customize the hover state */
-.pagination-btn:hover {
-    background-color: var(--secondary); /* Change hover color */
-    color: #FFFFFF; /* Ensure text color remains white */
+.paginationButton.active { 
+    color: var(--secondary); /* Text color for the active button */
+    border-radius: 5px; /* Optional: add border-radius for rounded corners */
 }
 
 .meal-planner-wrapper {
@@ -347,16 +343,21 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: #f7f7f7;
+    background-color: #ffffff;
 }
 
 /* Header for current day and navigation arrows */
+
+.meal-planner-header #currentDay{
+    color: white;
+    text-decoration: underline;
+}
 .meal-planner-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px;
     padding: 20px;
     background-color: #3CB815;
     color: white;
@@ -374,8 +375,12 @@
 .meal-planner-header .arrow:hover {
     background-color: #ddd;
 }
+select {
+    width: 150px; /* Change to your desired width */
+}
 
 /* Planner Modal */
+
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -404,56 +409,99 @@
     border: 1px solid #ddd;
     text-align: center;
 }
-
-/* Container for each time slot */
-.time-slot-container {
-    width: 100%;
-    height: 100px;
+.time-slot {
+    min-width: 170px;
     display: flex;
-    justify-content: center;
+    /* justify-content: flex-start; */
     align-items: center;
-    background-color: #f0f0f0;
-    position: relative;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    justify-content: space-between;
 }
 
-.time-slot-container .add-btn {
-    background-color: #3CB815;
+.time-slot span {
+    font-weight: bold;
+    flex-shrink: 0;
+    width: 80px; /* Fixed width for time label */
+}
+
+.add-btn {
+    margin-left: 70px;
+    padding: 5px 10px;
+    background-color: var(--primary);
+    color: #fff;
     border: none;
+    border-radius: 4px;
+    flex-shrink: 0; /* Keeps button size fixed */
+    position: absolute;
+}
+
+.timestamp{
+    color: #F65005;
+}
+
+.time-slot-container {
+    flex-grow: 0; /* Prevents it from stretching too far */
+    overflow-x: hidden;
+    /* padding-left: 10px; */
+    text-align: left;
+    min-height: 50px; 
+    max-height: 200px;
+    max-width: 80%;
+    white-space: nowrap;
+}
+
+.event-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 7px;
+    margin-bottom: 5px; 
+    border-radius: 4px; 
     color: white;
-    font-size: 1.5rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    background-color: var(--primary);
+    max-width: 100%;
+    box-sizing: border-box; /* Includes padding in width */
+    white-space: nowrap;
+}
+.event-title:hover{
     cursor: pointer;
 }
 
-.add-btn:hover {
-    background-color: #2a9e10;
+#recipeSelect, #updateRecipeSelect{
+    width: 330px;
+}
+.recipe-option{
+    width: 200px;
+}
+
+.calories-summary {
+    background-color: var(--primary); /* Light background */
+    border: 1px solid #ddd; /* Border around the card */
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px; /* Padding inside the card */
+    margin: 20px auto;
+    text-align: center; /* Centered text */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 300px; /* Set a max width for the card */
+    width: 90%; /* Responsive width */
+}
+
+.calories-summary h3 {
+    margin-bottom: 10px; /* Space below the heading */
+    font-size: 1.5rem; /* Size of the heading */
+    color: white;
+    text-decoration: underline;
+}
+
+.calories-value {
+    font-size: 2rem; /* Larger font for calories value */
+    color: white; /* Primary color for emphasis */
+    font-weight: bold; /* Bold font for the value */
 }
 
 /* Scrollable on smaller screens */
 .table-responsive {
     overflow-x: auto;
-}
-
-/* Ensure each time slot is wide enough */
-.time-slot {
-    min-width: 150px;
-}
-.time-slot-container {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center align items */
-}
-
-.event-title {
-    margin-top: 5px; /* Add some spacing between events */
-    font-size: 14px; /* Adjust font size as needed */
-    color: #333; /* Change text color */
-    background-color: #f8f9fa; /* Light background for events */
-    padding: 5px 10px; /* Add padding for a better look */
-    border-radius: 4px; /* Rounded corners */
-    width: 100%; /* Make it take full width */
 }
 
 /* Details page */

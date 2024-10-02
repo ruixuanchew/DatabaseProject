@@ -103,7 +103,7 @@
             </div>
     
             <!-- Search, Sort, and Filter Section -->
-            <div class="row mb-4">
+            <!-- <div class="row mb-4">
                 <div class="col-md-4">
                     <input type="text" id="searchInput" class="form-control filter-input" placeholder="Search plans...">
                 </div>
@@ -138,87 +138,194 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> -->
     
             <div class="meal-planner-wrapper">
                 <!-- Meal Planner Header with arrows and date -->
                 <div class="meal-planner-header d-flex justify-content-between align-items-center mb-3">
                     <span class="arrow" id="prevDay">&lt;</span>
-                    <span id="currentDay">Tuesday, 19 Sep 2023</span>
+                    <span id="currentDay"></span>
                     <span class="arrow" id="nextDay">&gt;</span>
                 </div>
             
                 <!-- Meal Planner Time Slots -->
-                <div class="row text-center">
-                    <div class="col-3 time-slot">
-                        6 AM
-                        <div class="time-slot-container">
-                            <button class="btn btn-primary add-btn">+</button>
-                            <div class="event-title">Breakfast: Oatmeal</div>
+                <div class="row">
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">6 AM</span>
+                        <button class="btn add-btn ml-3" data-time="6 AM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">7 AM</span>
+                        <button class="btn add-btn ml-3" data-time="7 AM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">8 AM</span>
+                        <button class="btn add-btn ml-3" data-time="8 AM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">9 AM</span>
+                        <button class="btn add-btn ml-3" data-time="9 AM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">10 AM</span>
+                        <button class="btn add-btn ml-3" data-time="10 AM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">11 AM</span>
+                        <button class="btn add-btn ml-3" data-time="11 AM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">12 PM</span>
+                        <button class="btn add-btn ml-3" data-time="12 PM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">1 PM</span>
+                        <button class="btn add-btn ml-3" data-time="1 PM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">2 PM</span>
+                        <button class="btn add-btn ml-3" data-time="2 PM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">3 PM</span>
+                        <button class="btn add-btn ml-3" data-time="3 PM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">4 PM</span>
+                        <button class="btn add-btn ml-3" data-time="4 PM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                    <div class="col-12 time-slot d-flex align-items-center">
+                        <span class="timestamp">5 PM</span>
+                        <button class="btn add-btn ml-3" data-time="5 PM">+</button>
+                        <div class="time-slot-container row flex-grow-1"></div>
+                    </div>
+                </div>
+                    <div class="row">
+                        <div class="col-12 time-slot d-flex align-items-center">
+                            <span class="timestamp">6 PM</span>
+                            <button class="btn add-btn ml-3" data-time="6 PM">+</button>
+                            <div class="time-slot-container row flex-grow-1"></div>
                         </div>
-                    </div>             
-                        <div class="col-3 time-slot">7 AM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="7 AM">+</button></div></div>
-                        <div class="col-3 time-slot">8 AM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="8 AM">+</button></div></div>
-                        <div class="col-3 time-slot">9 AM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="9 AM">+</button></div></div>
+                        <div class="col-12 time-slot d-flex align-items-center">
+                            <span class="timestamp">7 PM</span>
+                            <button class="btn add-btn ml-3" data-time="7 PM">+</button>
+                            <div class="time-slot-container row flex-grow-1"></div>
+                        </div>
+                        <div class="col-12 time-slot d-flex align-items-center">
+                            <span class="timestamp">8 PM</span>
+                            <button class="btn add-btn ml-3" data-time="8 PM">+</button>
+                            <div class="time-slot-container row flex-grow-1"></div>
+                        </div>
+                        <div class="col-12 time-slot d-flex align-items-center">
+                            <span class="timestamp">9 PM</span>
+                            <button class="btn add-btn ml-3" data-time="9 PM">+</button>
+                            <div class="time-slot-container row flex-grow-1"></div>
+                        </div>
                     </div>
-                    <div class="row text-center">
-                        <div class="col-3 time-slot">10 AM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="10 AM">+</button></div></div>
-                        <div class="col-3 time-slot">11 AM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="11 AM">+</button></div></div>
-                        <div class="col-3 time-slot">12 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="12 PM">+</button></div></div>
-                        <div class="col-3 time-slot">1 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="1 PM">+</button></div></div>
-                    </div>
-                    <div class="row text-center">
-                        <div class="col-3 time-slot">2 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="2 PM">+</button></div></div>
-                        <div class="col-3 time-slot">3 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="3 PM">+</button></div></div>
-                        <div class="col-3 time-slot">4 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="4 PM">+</button></div></div>
-                        <div class="col-3 time-slot">5 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="5 PM">+</button></div></div>
-                    </div>
-                    <div class="row text-center">
-                        <div class="col-3 time-slot">6 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="6 PM">+</button></div></div>
-                        <div class="col-3 time-slot">7 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="7 PM">+</button></div></div>
-                        <div class="col-3 time-slot">8 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="8 PM">+</button></div></div>
-                        <div class="col-3 time-slot">9 PM<div class="time-slot-container"><button class="btn btn-primary add-btn" data-time="9 PM">+</button></div></div>
-                    </div>
+                 </div>
             </div>
-            
         </div>
-    </div>
-    
-   
+        <div class="calories-summary justify-content-center">
+            <h3>Total Calories</h3>
+            <div class="calories-value">
+                <span id="total-calories">0</span> calories
+            </div>
+        </div>
     
     <!-- Product End -->
 
     <!-- Modal -->
-<div class="modal fade" id="addPlanModal" tabindex="-1" aria-labelledby="addPlanModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-primary" id="addPlanModalLabel">Add Meal Plan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addPlanForm">
-                    <div class="mb-3">
-                        <label for="planTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="planTitle" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="planDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="planDescription" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="recipeSelect" class="form-label">Select Recipe</label>
-                        <input type="text" class="form-control" id="recipeSelect" placeholder="Search for recipes..." autocomplete="off" required>
-                        <ul class="list-group" id="recipeDropdown" style="display:none;"></ul>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="savePlanButton">Save Plan</button>
+    <div class="modal fade" id="addPlanModal" tabindex="-1" aria-labelledby="addPlanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" id="addPlanModalLabel">Add Meal Plan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPlanForm">
+                        <div class="mb-3">
+                            <label for="planTitle" class="form-label">Title</label>
+                            <!-- <input type="text" class="form-control" id="planTitle" required> -->
+                            <textarea class="form-control" id="planTitle" rows="2" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="planDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="planDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3 row g-2">
+                            <div class="col-12 col-md-8">
+                                <select class="form-select" id="recipeSelect" required>
+                                    <option value="" disabled selected>Select a recipe</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4 d-grid">
+                                <button type="button" id="viewDetailsButton" class="btn btn-primary ms-3" style="display: none;">View Details</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="savePlanButton">Save Plan</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Update Plan Modal -->
+    <div class="modal fade" id="updatePlanModal" tabindex="-1" aria-labelledby="updatePlanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" id="updatePlanModalLabel">Update Meal Plan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updatePlanForm">
+                        <div class="mb-3">
+                            <label for="updatePlanTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="updatePlanTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updatePlanDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="updatePlanDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3 row g-2">
+                            <div class="col-12 col-md-8">
+                                <select class="form-select" id="updateRecipeSelect" required>
+                                    <option value="" disabled selected>Select a recipe</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4 d-grid">
+                                <button type="button" id="viewUpdateDetailsButton" class="btn btn-primary ms-3">View Details</button>
+                            </div>
+                        </div>
+                        
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveUpdatePlanButton">Update Plan</button>
+                    <button type="button" class="btn btn-secondary" id="deletePlanButton">Delete Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- Firm Visit Start -->

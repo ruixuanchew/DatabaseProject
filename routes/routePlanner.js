@@ -12,6 +12,9 @@ function routePlanner(app) {
     //   .get(plannerDBObject.getRecipeById)
        .put(plannerDBObject.updatePlan)
        .delete(plannerDBObject.deletePlan);
+
+   app.route('/planners/:date')
+       .get(plannerDBObject.getPlansByDate);
 }
 
 module.exports = { routePlanner };

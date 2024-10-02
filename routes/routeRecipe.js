@@ -7,11 +7,20 @@ function routeRecipe(app) {
     app.route('/recipes')
        .post(recipeDBObject.addRecipe)
        .get(recipeDBObject.getAllRecipes);
-    
+
+    app.route('/recipesNameId')
+      .get(recipeDBObject.getRecipeIdAndName);   
+
     app.route('/recipes/:id')
       .get(recipeDBObject.getRecipeById)
-       .put(recipeDBObject.updateRecipe)
-       .delete(recipeDBObject.deleteRecipe);
+      .put(recipeDBObject.updateRecipe)
+      .delete(recipeDBObject.deleteRecipe);
+
+    app.route('/recipes/:page/:limit')
+      .get(recipeDBObject.getRecipesByPage);
+
+    app.route('/recipes/count')
+      .get(recipeDBObject.countAllRecipes);
 }
 
 module.exports = { routeRecipe };
