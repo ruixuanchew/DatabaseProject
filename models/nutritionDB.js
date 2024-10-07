@@ -16,17 +16,21 @@ class NutritionDB {
         });
     }
 
-    // Get nutrition entry by ID
+    // Get all nutrition entry by recipe ID
     getNutritionById(request, respond) {
-        const nutritionId = request.params.id;
-        const sql = "SELECT * FROM nutrition WHERE nutrition_id = ?";
+        const recipeId = request.params.id;
+        const sql = `SELECT n.food, n.calories, n.protein, n.fat, n.fiber, n.carbs
+        FROM recipes r
+        JOIN nutrition n
+        ON r.ingredients REGEXP CONCAT('(^|[^a-zA-Z])', n.food, '([^a-zA-Z]|$)')
+        WHERE r.recipe_id = ?`;
 
-        db.query(sql, [nutritionId], (error, result) => {
+        db.query(sql, [recipeId], (error, result) => {
             if (error) {
                 throw error;
             }
             if (result.length > 0) {
-                respond.json(result[0]);
+                respond.json(result);
             } else {
                 respond.status(404).json({ message: 'Nutrition entry not found' });
             }
