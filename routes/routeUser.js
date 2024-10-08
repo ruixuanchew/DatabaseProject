@@ -19,20 +19,26 @@ function routeUser(app) {
         try {
             // Hash the password before storing
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+            // Modify the request body to include the hashed password
             const newUser = {
                 username: req.body.username,
                 email: req.body.email,
-                password: hashedPassword
+                password: hashedPassword // Replace with hashed password
             };
-            userDBObject.addUser(req, res);
+
+            // Manually pass the modified user to the `addUser` function
+            userDBObject.addUser({
+                body: newUser  // Pass the new user object with the hashed password
+            }, res);
         } catch (error) {
-         res.status(500).json({ success: false, message: 'Registration failed', error: error.message });
+            res.status(500).json({ success: false, message: 'Registration failed', error: error.message });
         }
     });
 
     // Route for login
     app.post('/login', (req, res) => {
-      const { username, password } = req.body;
+        const { username, password } = req.body;
 
         // Fetch the user by username
         userDBObject.getUserByUsername(username, (err, user) => {
@@ -56,26 +62,26 @@ function routeUser(app) {
                 res.status(200).json({ success: true, message: 'Login successful' });
             });
         });
-   });
+    });
 
-   // Logout route to destroy the session
-   app.get('/logout', (req, res) => {
-      req.session.destroy((err) => {
-          if (err) {
-              return res.status(500).json({ success: false, message: 'Logout failed' });
-          }
-          res.status(200).json({ success: true, message: 'Logout successful' });
-      });
-   });
+    // Logout route to destroy the session
+    app.get('/logout', (req, res) => {
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ success: false, message: 'Logout failed' });
+            }
+            res.status(200).json({ success: true, message: 'Logout successful' });
+        });
+    });
 
-  // Check if the user is logged in
-  app.get('/check-session', (req, res) => {
-      if (req.session.user) {
-         res.json({ loggedIn: true, user: req.session.user });
-      } else {
-         res.json({ loggedIn: false });
-      }
-   });
+    // Check if the user is logged in
+    app.get('/check-session', (req, res) => {
+        if (req.session.user) {
+            res.json({ loggedIn: true, user: req.session.user });
+        } else {
+            res.json({ loggedIn: false });
+        }
+    });
 }
 
 module.exports = { routeUser };
