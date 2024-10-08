@@ -15,28 +15,52 @@ class UserDB {
         });
     }
 
-    addUser(request, respond) {
+    getUserByUsername(username, callback) {
+        const sql = "SELECT * FROM users WHERE username = ?";
+        db.query(sql, [username], (error, result) => {
+            if (error) {
+                return callback(error, null);
+            }
+            if (result.length > 0) {
+                return callback(null, result[0]);  // Return the first user found
+            } else {
+                return callback(null, null);  // No user found
+            }
+        });
+    }
+    
+
+    addUser(request, res) {
         const userObject = new User(
             null,
             request.body.username,
             request.body.email,
-            request.body.password
+            request.body.password  // Already hashed in the /register route
         );
-
+    
         const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
         const values = [
             userObject.getUsername(),
             userObject.getEmail(),
-            userObject.getPassword() // Remember to hash the password before storing!
+            userObject.getPassword()  // Hashed password
         ];
-
+    
         db.query(sql, values, (error, result) => {
             if (error) {
-                throw error;
+                console.error("Error inserting user into the database:", error);
+                if (error.code === 'ER_DUP_ENTRY') {
+                    // Handle duplicate email error
+                    return res.status(409).json({ success: false, message: 'Email already exists' });
+                } else {
+                    // Handle other errors
+                    return res.status(500).json({ success: false, message: 'Registration failed', error });
+                }
             }
-            respond.json(result);
+            // Successfully added user, return a success message
+            res.status(200).json({ success: true, message: 'User registered successfully', result });
         });
     }
+    
 
     updateUser(request, respond) {
         const userObject = new User(

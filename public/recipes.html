@@ -64,7 +64,7 @@
                     <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
                         <small class="fa fa-search text-body"></small>
                     </a>
-                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="login.html">
+                    <a id="user-link" class="btn-sm-square bg-white rounded-circle ms-3" href="login.html">
                         <small class="fa fa-user text-body"></small>
                     </a>
                     <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
@@ -73,6 +73,7 @@
                 </div>
             </div>
         </nav>
+    
     </div>
     <!-- Navbar End -->
 
@@ -291,6 +292,27 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script src="js/recipes.js"></script>
+
+    <script>
+        // Fetch session status and update the navbar link accordingly
+        fetch('/check-session', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const userLink = document.getElementById('user-link');
+            if (data.loggedIn) {
+                // If logged in, change the link to the dashboard
+                userLink.href = 'dashboard.html';
+            } else {
+                // If not logged in, keep it as login
+                userLink.href = 'login.html';
+            }
+        })
+        .catch(error => {
+            console.error('Error checking session:', error);
+        });
+    </script>
 </body>
 
 </html>

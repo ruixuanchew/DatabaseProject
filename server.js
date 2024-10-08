@@ -10,6 +10,16 @@ const app = express();
 const port = 3000;
 var startPage = "recipes.html";
 
+// Session for login
+const session = require('express-session');
+
+app.use(session({
+    secret: 'your_secret_key',  // Use a strong secret key for production
+    resave: false,              // Don't save session if it hasn't been modified
+    saveUninitialized: false,   // Don't create session until something stored
+    cookie: { secure: false }   // Set true if using HTTPS; set false for HTTP
+}));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
