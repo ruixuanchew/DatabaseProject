@@ -46,3 +46,75 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 500); // Wait for the transition to finish
     });
 });
+
+// Handle Registration when the "Create Account" button is clicked in the register form
+document.querySelector('.register-card .create-account').addEventListener('click', function () {
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    fetch('/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password })
+    })
+    .then(response => {
+        if (response.status === 409) {
+            return response.json().then(data => { throw new Error(data.message); });
+        }
+        if (!response.ok) {
+            return response.json().then(data => { throw new Error(data.message); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Registration successful!');
+            window.location.href = 'login.html'; // Redirect on success
+        } else {
+            alert('Registration failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error.message); // Catch any errors from the server or network
+    });
+});
+
+// Handle Login when the login button is clicked in the login form
+document.querySelector('.login-card .btn-primary').addEventListener('click', function () {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => { throw new Error(data.message); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Login successful!');
+            window.location.href = 'dashboard.html'; // Redirect on success
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error.message); // Catch any errors from the server or network
+    });
+});
