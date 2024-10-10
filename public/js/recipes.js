@@ -1,10 +1,30 @@
 let recipes = [];
-const recipesPerPage = 32;
+const recipesPerPage = 20;
 let currentPage = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
-    getRecipes();
-    document.getElementById('searchInput').addEventListener('input', filterRecipes);
+    // On page load, check if the URL contains a page number and a query
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('query'); // Get the search query from the URL
+    const page = parseInt(urlParams.get('page')) || 1; // Get the page number or default to 1
+
+    currentPage = page; // Set the current page based on URL parameter
+
+    if (query) {
+        document.getElementById('searchInput').value = query; // Set search input value
+        searchRecipes(query); // If there's a search query, perform the search
+    } else {
+        getRecipes(); // Otherwise, load all recipes
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            searchRecipes();
+        }
+    });
+    document.getElementById('searchButton').addEventListener('click', function (event) {
+        searchRecipes();         // Execute the search
+    });
 });
 
 // Future for optimisation 
@@ -22,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //     .catch(error => console.error('Error fetching recipes:', error));
 // }
 function getRecipes() {
-    fetch('/recipes')  
+    fetch('/recipes')
         .then(response => response.json())
         .then(data => {
             recipes = data; // Store fetched recipes
@@ -46,6 +66,11 @@ function displayRecipes(page) {
     const startIndex = (page - 1) * recipesPerPage;
     const endIndex = Math.min(startIndex + recipesPerPage, recipes.length);
     const recipesToDisplay = recipes.slice(startIndex, endIndex);
+
+    if (recipesToDisplay.length === 0) {
+        list.innerHTML = '<p>No recipes found matching your search.</p>'; // Inform the user if no recipes found
+        return;
+    }
 
     // Array of image URLs
     const images = [
@@ -91,6 +116,10 @@ function setupPagination() {
     paginationContainer.innerHTML = ''; // Clear any previous content
 
     const totalPages = Math.ceil(recipes.length / recipesPerPage);
+    if (totalPages === 0) {
+        paginationContainer.innerHTML = '<p>No results to display.</p>'; // Handle case where there are no results
+        return;
+    }
     const maxButtonsToShow = 10; // Maximum number of page buttons to display
     const ellipsis = '...';
 
@@ -104,12 +133,18 @@ function setupPagination() {
         button.innerText = pageNum;
         button.href = '#'; // Prevent default link behavior
         button.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent page jump
+            //e.preventDefault(); // Prevent page jump
             currentPage = pageNum; // Update current page
             displayRecipes(currentPage); // Display recipes for the current page
-            
+
             // Update pagination display
             setupPagination();
+
+             // Update the URL with the new page number
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page', pageNum); // Set the new page parameter
+            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+            history.pushState({ page: pageNum }, '', newUrl); // Update the URL without reloading
         });
         return button;
     };
@@ -151,9 +186,15 @@ function setupPagination() {
     }
 }
 
-function filterRecipes() {
-    // Filter query 
-}
+// function filterRecipes() {
+//     // Filter query
+//     const query = document.getElementById('searchInput').value.toLowerCase();
+//     if (query) {
+//         searchRecipes(query);  // Use search function when there's input
+//     } else {
+//         getRecipes();  // Reset to all recipes if search field is cleared
+//     } 
+// }
 
 function addRecipe() {
     const recipe = {
@@ -175,11 +216,42 @@ function addRecipe() {
         },
         body: JSON.stringify(recipe)
     })
-    .then(response => response.json())
-    .then(() => {
-        getRecipes();
-        document.getElementById('recipeForm').reset();
-    });
+        .then(response => response.json())
+        .then(() => {
+            getRecipes();
+            document.getElementById('recipeForm').reset();
+        });
+}
+
+function searchRecipes(query) {
+    const searchInput = document.getElementById('searchInput').value.trim();
+    const searchQuery = query || searchInput; // Use the query from URL or input field
+
+    // Check if the search query has changed to reset the current page to 1
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentQuery = urlParams.get('query');
+
+    if (searchQuery && searchQuery !== currentQuery) {
+        currentPage = 1; // Reset to the first page for a new search
+    }
+
+    fetch(`/search?query=${encodeURIComponent(searchQuery)}&page=${currentPage}`)
+        .then(response => response.json())
+        .then(data => {
+            recipes = data; // Store fetched recipes
+            displayRecipes(currentPage); // Display recipes for the current page
+            setupPagination(); // Setup pagination buttons
+        })
+        .catch(error => {
+            console.error('Error fetching recipes:', error);
+            // Optionally handle errors (e.g., display an error message)
+        });
+
+    // Update the URL with the search query
+    urlParams.set('query', searchQuery); // Set the new query parameter
+    urlParams.set('page', currentPage); // Update the page parameter
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    history.pushState({ query: searchQuery, page: currentPage }, '', newUrl); // Update the URL without reloading
 }
 
 function updateRecipe() {
@@ -203,11 +275,11 @@ function updateRecipe() {
         },
         body: JSON.stringify(recipe)
     })
-    .then(response => response.json())
-    .then(() => {
-        getRecipes();
-        document.getElementById('recipeForm').reset();
-    });
+        .then(response => response.json())
+        .then(() => {
+            getRecipes();
+            document.getElementById('recipeForm').reset();
+        });
 }
 
 function deleteRecipe() {
@@ -216,9 +288,9 @@ function deleteRecipe() {
     fetch(`/recipes/${recipeId}`, {
         method: 'DELETE'
     })
-    .then(response => response.json())
-    .then(() => {
-        getRecipes();
-        document.getElementById('recipeForm').reset();
-    });
+        .then(response => response.json())
+        .then(() => {
+            getRecipes();
+            document.getElementById('recipeForm').reset();
+        });
 }

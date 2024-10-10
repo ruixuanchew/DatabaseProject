@@ -6,7 +6,7 @@ const Recipe = require('./recipe');
 class RecipeDB {
 
     getAllRecipes(request, respond) {
-        const sql = "SELECT * FROM recipes";
+        const sql = "SELECT * FROM recipes LIMIT 100";
         db.query(sql, (error, result) => {
             if (error) {
                 throw error;
@@ -31,8 +31,8 @@ class RecipeDB {
     // Do in the future for optimisation (:D)
     getRecipesByPage(request, respond) {
         console.log('Gets here');
-        const page = parseInt(request.params.page) || 1;  
-        const limit = parseInt(request.params.limit) || 32; 
+        const page = parseInt(request.params.page) || 1;
+        const limit = parseInt(request.params.limit) || 20;
         const offset = (page - 1) * limit;
         console.log(page, limit);
 
@@ -44,10 +44,10 @@ class RecipeDB {
             SELECT *
             FROM recipe_pages
             WHERE row_num BETWEEN ? AND ?;`;
-   
-        const startRow = offset + 1;  
+
+        const startRow = offset + 1;
         const endRow = offset + limit;
-    
+
         db.query(sql, [startRow, endRow], (error, result) => {
             if (error) {
                 return respond.status(500).json({ error: "Database query error" });
@@ -55,7 +55,7 @@ class RecipeDB {
             respond.json(result);
         });
     }
-    
+
 
     getRecipeIdAndName(request, respond) {
         const sql = "SELECT recipe_id, name FROM recipes";
@@ -67,6 +67,28 @@ class RecipeDB {
         });
     }
 
+    getRecipeBySearch(request, respond) {
+        const searchQuery = request.query.query.toLowerCase();
+    
+        const query = `SELECT * FROM recipes WHERE LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ? LIMIT 100`;
+        const values = [`%${searchQuery}%`, `%${searchQuery}%`];
+    
+        db.query(query, values, (error, results) => {
+            if (error) {
+                console.error('Error executing search query:', error);
+                return respond.status(500).json({ error: 'Error searching recipes' });
+            }
+    
+            if (results.length === 0) {
+                return respond.status(404).json({ message: 'No recipes found' });
+            }
+    
+            respond.status(200).json(results);  // Return the found recipes
+            console.log(results);
+        });
+    }
+    
+
     getRecipeById(request, respond) {
         const recipeId = request.params.id;
         const sql = "SELECT * FROM recipes WHERE recipe_id = ?";
@@ -77,7 +99,7 @@ class RecipeDB {
             }
             // Check if a recipe was found
             if (result.length > 0) {
-                respond.json(result[0]); 
+                respond.json(result[0]);
             } else {
                 respond.status(404).json({ message: 'Recipe not found' });
             }
@@ -97,7 +119,7 @@ class RecipeDB {
             request.body.tags,
             request.body.search_terms
         );
-        
+
         const sql = "INSERT INTO recipes (name, description, ingredients, ingredients_raw, serving_size, servings, steps, tags, search_terms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         const values = [
             recipeObject.getName(),
