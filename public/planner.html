@@ -37,22 +37,41 @@
         <div class="spinner-border text-primary" role="status"></div>
     </div>
     <!-- Spinner End -->
-    <div id="navbar-placeholder"></div>
-
-        <script>
-            // Load the navigation bar into the placeholder
-            document.addEventListener("DOMContentLoaded", function() {
-                fetch('path/to/nav.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('navbar-placeholder').innerHTML = data;
-                });
-            });
-        </script>
-
-    </div>
-    <!-- Navbar End -->
-
+    <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
+        <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
+            <h1 class="fw-bold text-primary m-0">F<span class="text-secondary">oo</span>dy</h1>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="recipes.html" class="nav-item nav-link active">Recipes</a>
+                <a href="planner.html" class="nav-item nav-link active" onclick="">Planner</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                    <div class="dropdown-menu m-0">
+                        <a href="blog.html" class="dropdown-item">Blog Grid</a>
+                        <a href="feature.html" class="dropdown-item">Our Features</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                        <a href="404.html" class="dropdown-item">404 Page</a>
+                    </div>
+                </div>
+                <a href="contact.html" class="nav-item nav-link">Contact Us</a>
+            </div>
+            <div class="d-none d-lg-flex ms-2">
+                <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                    <small class="fa fa-search text-body"></small>
+                </a>
+                <a id="user-link" class="btn-sm-square bg-white rounded-circle ms-3" href="login.html">
+                    <small class="fa fa-user text-body"></small>
+                </a>
+                <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                    <small class="fa fa-shopping-bag text-body"></small>
+                </a>
+            </div>
+        </div>
+    </nav>
 
     <!-- Page Header Start -->
     <div class="container-fluid page-header mb-5 wow fadeIn" data-wow-delay="0.1s">
@@ -78,45 +97,6 @@
                     </div>
                 </div>
             </div>
-    
-            <!-- Search, Sort, and Filter Section -->
-            <!-- <div class="row mb-4">
-                <div class="col-md-4">
-                    <input type="text" id="searchInput" class="form-control filter-input" placeholder="Search plans...">
-                </div>
-                <div class="col-md-4">
-                    <select id="sortOptions" class="form-select filter-input">
-                        <option value="">Sort by</option>
-                        <option value="name">Name</option>
-                        <option value="serving_size">Serving Size</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary border-2 dropdown-toggle filter-input" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Filter
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                            <li>
-                                <a class="dropdown-item">
-                                    <input type="checkbox" value="low_calories"> Low Calories
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item">
-                                    <input type="checkbox" value="vegetarian"> Vegetarian
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item">
-                                    <input type="checkbox" value="gluten_free"> Gluten Free
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div> -->
-    
             <div class="meal-planner-wrapper">
                 <!-- Meal Planner Header with arrows and date -->
                 <div class="meal-planner-header d-flex justify-content-between align-items-center mb-3">
@@ -126,103 +106,127 @@
                 </div>
             
                 <!-- Meal Planner Time Slots -->
-                <div class="row">
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">6 AM</span>
-                        <button class="btn add-btn ml-3" data-time="6 AM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">7 AM</span>
-                        <button class="btn add-btn ml-3" data-time="7 AM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">8 AM</span>
-                        <button class="btn add-btn ml-3" data-time="8 AM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">9 AM</span>
-                        <button class="btn add-btn ml-3" data-time="9 AM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">10 AM</span>
-                        <button class="btn add-btn ml-3" data-time="10 AM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">11 AM</span>
-                        <button class="btn add-btn ml-3" data-time="11 AM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">12 PM</span>
-                        <button class="btn add-btn ml-3" data-time="12 PM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">1 PM</span>
-                        <button class="btn add-btn ml-3" data-time="1 PM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">2 PM</span>
-                        <button class="btn add-btn ml-3" data-time="2 PM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">3 PM</span>
-                        <button class="btn add-btn ml-3" data-time="3 PM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">4 PM</span>
-                        <button class="btn add-btn ml-3" data-time="4 PM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                    <div class="col-12 time-slot d-flex align-items-center">
-                        <span class="timestamp">5 PM</span>
-                        <button class="btn add-btn ml-3" data-time="5 PM">+</button>
-                        <div class="time-slot-container row flex-grow-1"></div>
-                    </div>
-                </div>
+                <div class="container">
+                    <!-- Meal Planner and Summary Side by Side -->
                     <div class="row">
-                        <div class="col-12 time-slot d-flex align-items-center">
-                            <span class="timestamp">6 PM</span>
-                            <button class="btn add-btn ml-3" data-time="6 PM">+</button>
-                            <div class="time-slot-container row flex-grow-1"></div>
+                        <!-- Meal Planner Section -->
+                        <div class="col-md-8">
+                            <!-- Meal Planner Time Slots -->
+                            <div class="row">
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">6 AM</span>
+                                    <button class="btn add-btn ml-3" data-time="6 AM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">7 AM</span>
+                                    <button class="btn add-btn ml-3" data-time="7 AM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">8 AM</span>
+                                    <button class="btn add-btn ml-3" data-time="8 AM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">9 AM</span>
+                                    <button class="btn add-btn ml-3" data-time="9 AM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">10 AM</span>
+                                    <button class="btn add-btn ml-3" data-time="10 AM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">11 AM</span>
+                                    <button class="btn add-btn ml-3" data-time="11 AM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">12 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="12 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">1 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="1 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">2 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="2 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">3 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="3 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">4 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="4 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">5 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="5 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">6 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="6 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">7 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="7 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">8 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="8 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">9 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="9 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                                <div class="col-12 time-slot d-flex align-items-center">
+                                    <span class="timestamp">10 PM</span>
+                                    <button class="btn add-btn ml-3" data-time="10 PM">+</button>
+                                    <div class="time-slot-container row flex-grow-1"></div>
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="col-12 time-slot d-flex align-items-center">
-                            <span class="timestamp">7 PM</span>
-                            <button class="btn add-btn ml-3" data-time="7 PM">+</button>
-                            <div class="time-slot-container row flex-grow-1"></div>
-                        </div>
-                        <div class="col-12 time-slot d-flex align-items-center">
-                            <span class="timestamp">8 PM</span>
-                            <button class="btn add-btn ml-3" data-time="8 PM">+</button>
-                            <div class="time-slot-container row flex-grow-1"></div>
-                        </div>
-                        <div class="col-12 time-slot d-flex align-items-center">
-                            <span class="timestamp">9 PM</span>
-                            <button class="btn add-btn ml-3" data-time="9 PM">+</button>
-                            <div class="time-slot-container row flex-grow-1"></div>
+                        <!--Summary Section -->
+                        <div class="col-md-4">
+                            <!-- Calorie Summary -->
+                            <div class="calories-summary text-center">
+                                <h3>Total Calories</h3>
+                                <div class="calories-value">
+                                    <span id="total-calories">0</span> calories
+                                </div>
+                            </div>
+                            <div class="calories-summary text-center mt-4">
+                                <h3>Meals Today</h3>
+                                <div class="calories-value">
+                                    <span id="total-meal">0</span> meals
+                                </div>
+                            </div>
+                            <div class="calories-summary text-center mt-4">
+                                <h3>Total Meals This Week</h3>
+                                <div class="calories-value">
+                                    <span id="total-meal-weekly">0</span> meals
+                                </div>
+                            </div>
                         </div>
                     </div>
-                 </div>
-            </div>
-        </div>
-        <div class="calories-summary justify-content-center">
-            <h3>Total Calories</h3>
-            <div class="calories-value">
-                <span id="total-calories">0</span> calories
-            </div>
-        </div>
+                </div>
+                
+  
     
     <!-- Product End -->
 
@@ -251,9 +255,9 @@
                                     <option value="" disabled selected>Select a recipe</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-4 d-grid">
+                            <!-- <div class="col-12 col-md-4 d-grid">
                                 <button type="button" id="viewDetailsButton" class="btn btn-primary ms-3" style="display: none;">View Details</button>
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                 </div>
@@ -288,9 +292,9 @@
                                     <option value="" disabled selected>Select a recipe</option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-4 d-grid">
+                            <!-- <div class="col-12 col-md-4 d-grid">
                                 <button type="button" id="viewUpdateDetailsButton" class="btn btn-primary ms-3">View Details</button>
-                            </div>
+                            </div> -->
                         </div>
                         
                         
