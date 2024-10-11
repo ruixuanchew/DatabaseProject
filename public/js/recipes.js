@@ -7,8 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('query'); // Get the search query from the URL
     const page = parseInt(urlParams.get('page')) || 1; // Get the page number or default to 1
+    const sortBy = urlParams.get('sortBy'); // Get sortBy parameter from the URL
+    const sortDirection = urlParams.get('sortDirection'); // Get sortDirection from the URL
 
     currentPage = page; // Set the current page based on URL parameter
+
+    if (sortBy && sortDirection) {
+        // Retain the selected sort option in the dropdown
+        document.getElementById('sortOptions').value = `${sortBy}_${sortDirection.toLowerCase()}`;
+    }
 
     if (query) {
         document.getElementById('searchInput').value = query; // Set search input value
@@ -27,6 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('sortOptions').addEventListener('change', function() {
         const selectedSort = this.value;
+
+        // If "Default" is selected
+        if (selectedSort === 'default') {
+            this.value = 'default';
+            const newUrl = `${window.location.pathname}`;
+            history.pushState({}, '', newUrl); // Remove all parameters
+            getRecipes(); // Reset the displayed recipes
+            return;
+        }
+
         let sortBy = 'default';
         let sortDirection = 'ASC';
     
@@ -90,30 +107,30 @@ function getRecipes() {
     const urlParams = new URLSearchParams(window.location.search);
     const sortBy = urlParams.get('sortBy') || null; // Get sortBy from URL
     const sortDirection = urlParams.get('sortDirection') || null; // Get sortDirection from URL
+    const query = urlParams.get('query') || null; // Get search query from URL
     const page = currentPage || 1; // Ensure the current page is set
     const limit = recipesPerPage || 20; // Set the limit to 20 by default
 
-    // Fetch sorted recipes if sort parameters exist
-    if (sortBy) {
-        fetch(`/recipes/sorted/${page}/${limit}?sortBy=${sortBy}&sortDirection=${sortDirection}`)
-            .then(response => response.json())
-            .then(data => {
-                recipes = data; // Store fetched recipes
-                displayRecipes(currentPage); // Display them on the page
-                setupPagination(); // Setup pagination
-            })
-            .catch(error => console.error('Error fetching sorted recipes:', error));
-    } else {
-        // Fetch all recipes if no sort is applied
-        fetch('/recipes')
-            .then(response => response.json())
-            .then(data => {
-                recipes = data; // Store fetched recipes
-                displayRecipes(currentPage); // Display them on the page
-                setupPagination(); // Setup pagination
-            })
-            .catch(error => console.error('Error fetching recipes:', error));
+    // Fetch sorted and/or filtered recipes based on query and sort parameters
+    let fetchUrl = `/recipes/sorted/${page}/${limit}`;
+    if (query) {
+        fetchUrl += `?query=${encodeURIComponent(query)}`;
     }
+    if (sortBy) {
+        fetchUrl += `${query ? '&' : '?'}sortBy=${sortBy}&sortDirection=${sortDirection}`;
+    }
+
+    // Log the fetch URL to see the constructed request
+    console.log('Fetching recipes from URL:', fetchUrl);
+
+    fetch(fetchUrl)
+        .then(response => response.json())
+        .then(data => {
+            recipes = data; // Store fetched recipes
+            displayRecipes(currentPage); // Display them on the page
+            setupPagination(); // Setup pagination
+        })
+        .catch(error => console.error('Error fetching recipes:', error));
 }
 
 function displayRecipes(page) {
@@ -294,12 +311,25 @@ function searchRecipes(query) {
     // Check if the search query has changed to reset the current page to 1
     const urlParams = new URLSearchParams(window.location.search);
     const currentQuery = urlParams.get('query');
+    const sortBy = urlParams.get('sortBy'); // Default to 'name'
+    const sortDirection = urlParams.get('sortDirection'); // Default to 'ASC'
 
     if (searchQuery && searchQuery !== currentQuery) {
         currentPage = 1; // Reset to the first page for a new search
     }
 
-    fetch(`/search?query=${encodeURIComponent(searchQuery)}&page=${currentPage}`)
+    // Combine search and sort when fetching the recipes
+    let fetchUrl = `/search?query=${encodeURIComponent(searchQuery)}&page=${currentPage}`;
+    
+    // Include sorting parameters if they exist
+    if (sortBy) {
+        fetchUrl += `&sortBy=${sortBy}&sortDirection=${sortDirection}`;
+    }
+
+    // Log the fetch URL to see the constructed request
+    console.log('Fetching recipes from URL:', fetchUrl);
+
+    fetch(fetchUrl)
         .then(response => response.json())
         .then(data => {
             recipes = data; // Store fetched recipes
@@ -308,15 +338,22 @@ function searchRecipes(query) {
         })
         .catch(error => {
             console.error('Error fetching recipes:', error);
-            // Optionally handle errors (e.g., display an error message)
         });
 
-    // Update the URL with the search query
+    // Update the URL with both search query and sorting options
     urlParams.set('query', searchQuery); // Set the new query parameter
     urlParams.set('page', currentPage); // Update the page parameter
+    if (sortBy) {
+        urlParams.set('sortBy', sortBy); // Retain the sortBy parameter
+        urlParams.set('sortDirection', sortDirection); // Retain the sortDirection parameter
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    history.pushState({ query: searchQuery, page: currentPage, sortBy, sortDirection }, '', newUrl); // Update the URL without reloading
+    }
+    
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     history.pushState({ query: searchQuery, page: currentPage }, '', newUrl); // Update the URL without reloading
 }
+
 
 function updateRecipe() {
     const recipeId = document.getElementById('recipeId').value;

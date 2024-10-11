@@ -17,13 +17,11 @@ class RecipeDB {
 
     // For future reference when optimising 
     countAllRecipes(request, respond) {
-        console.log('Copunt all recipes');
         const sql = "SELECT COUNT(*) as total FROM recipes";
         db.query(sql, (error, result) => {
             if (error) {
                 return respond.status(500).json({ error: "Database query error" });
             }
-            console.log(result[0].total)
             respond.json(result[0].total); // Send back the total count
         });
     }
@@ -60,25 +58,45 @@ class RecipeDB {
         const page = parseInt(request.params.page) || 1;
         const limit = parseInt(request.params.limit) || 20;
         const offset = (page - 1) * limit;
-    
+
+        const searchQuery = request.query.query ? request.query.query.toLowerCase() : ''; // Optional search query
         const sortBy = request.query.sortBy || 'recipe_id'; // Default sorting by recipe_id
-        const sortDirection = request.query.sortDirection || 'ASC'; // Default sort direction
-    
-        const sql = `
-            SELECT *
-            FROM recipes
-            ORDER BY ${db.escapeId(sortBy)} ${sortDirection}
-            LIMIT 100 OFFSET ?;`;
-    
-        db.query(sql, [limit, offset], (error, result) => {
+        const sortDirection = request.query.sortDirection === 'DESC' ? 'DESC' : 'ASC'; // Default sort direction
+
+        // Construct the SQL query
+        let sql = `SELECT * FROM recipes WHERE 1=1`;
+        const values = [];
+
+        // If a search query exists, add filtering condition
+        if (searchQuery) {
+            sql += ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
+            values.push(`%${searchQuery}%`, `%${searchQuery}%`);
+        }
+
+        // Append sorting and pagination
+        if (sortBy === 'serving_size') {
+            // Sorting by numeric value extracted from 'serving_size'
+            sql += ` ORDER BY CAST(SUBSTRING_INDEX(serving_size, ' ', 1) AS UNSIGNED) ${sortDirection}`;
+        } else {
+            sql += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        }
+
+        // Append sorting and pagination
+        sql += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        sql += ` LIMIT 100 OFFSET ?`;
+        values.push(offset);
+
+        // Log the constructed query and values
+        console.log('Executing SQL Query:', sql);
+        console.log('With values:', values);
+
+        db.query(sql, values, (error, result) => {
             if (error) {
                 return respond.status(500).json({ error: "Database query error" });
             }
             respond.json(result);
         });
     }
-    
-    
 
     getRecipeIdAndName(request, respond) {
         const sql = "SELECT recipe_id, name FROM recipes";
@@ -91,15 +109,41 @@ class RecipeDB {
     }
 
     getRecipeBySearch(request, respond) {
-        const searchQuery = request.query.query.toLowerCase();
+        const searchQuery = request.query.query ? request.query.query.toLowerCase() : '';
+        const sortBy = request.query.sortBy || 'recipe_id'; // Default sort by 'name'
+        const sortDirection = request.query.sortDirection === 'DESC' ? 'DESC' : 'ASC'; // Default to 'ASC'
+        const page = parseInt(request.query.page) || 1;
+        const limit = 20;
+        const offset = (page - 1) * limit;
 
-        const query = `SELECT * FROM recipes WHERE LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ? LIMIT 100`;
-        const values = [`%${searchQuery}%`, `%${searchQuery}%`];
+        // Construct the query to handle both search and sort
+        let query = `SELECT * FROM recipes WHERE 1=1`;
+        const values = [];
+
+        if (searchQuery) {
+            query += ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
+            values.push(`%${searchQuery}%`, `%${searchQuery}%`);
+        }
+
+        // Append sorting and pagination
+        if (sortBy === 'serving_size') {
+            query += ` ORDER BY CAST(SUBSTRING_INDEX(serving_size, ' ', 1) AS UNSIGNED) ${sortDirection}`;
+        } else {
+            query += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        }
+
+        // Append sorting and pagination
+        query += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        query += ` LIMIT 100 OFFSET ?`;
+        values.push(offset);
+
+        // Log the SQL query and values
+        console.log('Executing SQL Query:', query);
+        console.log('With values:', values);
 
         db.query(query, values, (error, results) => {
             if (error) {
-                console.error('Error executing search query:', error);
-                return respond.status(500).json({ error: 'Error searching recipes' });
+                return respond.status(500).json({ error: 'Error searching and sorting recipes' });
             }
 
             if (results.length === 0) {
@@ -107,10 +151,8 @@ class RecipeDB {
             }
 
             respond.status(200).json(results);  // Return the found recipes
-            console.log(results);
         });
     }
-
 
     getRecipeById(request, respond) {
         const recipeId = request.params.id;
