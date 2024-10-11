@@ -66,7 +66,7 @@ function displayRecipeDetails() {
             // Populate the Steps section
             const stepsList = document.getElementById('recipeSteps');
             stepsList.innerHTML = '';
-            recipe.steps.split(',').forEach(step => {
+            recipe.steps.split('\n').forEach(step => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item';
                 li.textContent = step;
