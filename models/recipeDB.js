@@ -56,6 +56,29 @@ class RecipeDB {
         });
     }
 
+    getSortedRecipes(request, respond) {
+        const page = parseInt(request.params.page) || 1;
+        const limit = parseInt(request.params.limit) || 20;
+        const offset = (page - 1) * limit;
+    
+        const sortBy = request.query.sortBy || 'recipe_id'; // Default sorting by recipe_id
+        const sortDirection = request.query.sortDirection || 'ASC'; // Default sort direction
+    
+        const sql = `
+            SELECT *
+            FROM recipes
+            ORDER BY ${db.escapeId(sortBy)} ${sortDirection}
+            LIMIT 100 OFFSET ?;`;
+    
+        db.query(sql, [limit, offset], (error, result) => {
+            if (error) {
+                return respond.status(500).json({ error: "Database query error" });
+            }
+            respond.json(result);
+        });
+    }
+    
+    
 
     getRecipeIdAndName(request, respond) {
         const sql = "SELECT recipe_id, name FROM recipes";
@@ -69,25 +92,25 @@ class RecipeDB {
 
     getRecipeBySearch(request, respond) {
         const searchQuery = request.query.query.toLowerCase();
-    
+
         const query = `SELECT * FROM recipes WHERE LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ? LIMIT 100`;
         const values = [`%${searchQuery}%`, `%${searchQuery}%`];
-    
+
         db.query(query, values, (error, results) => {
             if (error) {
                 console.error('Error executing search query:', error);
                 return respond.status(500).json({ error: 'Error searching recipes' });
             }
-    
+
             if (results.length === 0) {
                 return respond.status(404).json({ message: 'No recipes found' });
             }
-    
+
             respond.status(200).json(results);  // Return the found recipes
             console.log(results);
         });
     }
-    
+
 
     getRecipeById(request, respond) {
         const recipeId = request.params.id;
