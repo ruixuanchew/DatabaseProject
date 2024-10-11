@@ -1,9 +1,13 @@
 let recipes = [];
+let plansArr = [];
 let selectedRecipeId = null;
-
+let selectedPlanId = null;
 // Get and display the current date
 const currentDate = new Date();
 const currentDayElem = document.getElementById('currentDay');
+let currentUser;
+let totalCalories = 0;
+let caloriesCalculated = false;
 
 // Function to update the displayed current day
 function updateCurrentDay(date) {
@@ -16,6 +20,8 @@ function prevDay() {
     currentDate.setDate(currentDate.getDate() - 1);
     updateCurrentDay(currentDate);
     getPlans(); 
+    caloriesCalculated = false;
+    // calculateWeeklyMeal();
 }
 
 // Function to move to the next day
@@ -23,6 +29,8 @@ function nextDay() {
     currentDate.setDate(currentDate.getDate() + 1);
     updateCurrentDay(currentDate);
     getPlans(); 
+    caloriesCalculated = false;
+    // calculateWeeklyMeal();
 }
 
 // Initialize with today's date
@@ -77,57 +85,6 @@ function openUpdateModal(plan) {
     // Store the current plan ID for updating
     selectedPlanId = plan.planner_id;
 }
-
-// Function to show the "View Details" button and update its href
-function initializeViewDetailsButton() {
-    const recipeDropdown = document.getElementById('recipeSelect');
-    const viewDetailsButton = document.getElementById('viewDetailsButton');
-
-    recipeDropdown.addEventListener('change', function() {
-        selectedRecipeId = this.value; // Update the selected recipe ID
-
-        // Find the selected recipe object
-        const selectedRecipe = recipes.find(recipe => recipe.recipe_id == selectedRecipeId);
-
-        if (selectedRecipe) {
-            // Show the "View Details" button
-            viewDetailsButton.style.display = 'inline-block';
-
-            // Update the href for the "View Details" button with the selected recipe's ID
-            viewDetailsButton.addEventListener('click', function() {
-                window.location.href = `details.html?id=${selectedRecipe.recipe_id}`;
-            });
-        } else {
-            // Hide the "View Details" button if no valid recipe is selected
-            viewDetailsButton.style.display = 'none';
-        }
-    });
-}
-function initializeUpdateViewDetailsButton() {
-    const recipeDropdown = document.getElementById('updateRecipeSelect');
-    const viewDetailsButton = document.getElementById('viewUpdateDetailsButton');
-
-    recipeDropdown.addEventListener('change', function() {
-        selectedRecipeId = this.value; // Update the selected recipe ID
-
-        // Find the selected recipe object
-        const selectedRecipe = recipes.find(recipe => recipe.recipe_id == selectedRecipeId);
-
-        if (selectedRecipe) {
-            // Show the "View Details" button
-            viewDetailsButton.style.display = 'inline-block';
-
-            // Update the href for the "View Details" button with the selected recipe's ID
-            viewDetailsButton.addEventListener('click', function() {
-                window.location.href = `details.html?id=${selectedRecipe.recipe_id}`;
-            });
-        } else {
-            // Hide the "View Details" button if no valid recipe is selected
-            viewDetailsButton.style.display = 'none';
-        }
-    });
-}
-
 // Function to close the modal
 function closeModal() {
     modal.style.display = 'none';
@@ -198,6 +155,7 @@ function initializeUpdateButton() {
         const updatedDescription = document.getElementById('updatePlanDescription').value;
 
         const updatedRecipeId = document.getElementById('updateRecipeSelect').value;
+        selectedRecipeId = updatedRecipeId;
         const updatedPlan = {
             recipe_id: updatedRecipeId,
             title: updatedTitle,
@@ -214,9 +172,10 @@ function initializeUpdateButton() {
         .then(response => response.json())
         .then(() => {
             selectedEventDiv.textContent = `${updatedTitle}: ${updatedDescription}`;
-
             closeUpdateModal();
             getPlans(); 
+            calculateCalories(selectedPlanId, 'update');
+            selectedRecipeId = null;
         })
         .catch(error => console.error('Error updating plan:', error));
     }
@@ -231,6 +190,7 @@ function initializeUpdateButton() {
         .then(() => {
             closeUpdateModal();
             getPlans(); 
+            calculateCalories(selectedPlanId, 'delete');
         })
         .catch(error => console.error('Error updating plan:', error));
     }
@@ -275,22 +235,46 @@ function getPlans() {
     fetch('/planners')
         .then(response => response.json())
         .then(plans => {
-            // Clear existing events before displaying new ones
+            plansArr = plans;
             const existingEvents = document.querySelectorAll('.event-title');
             existingEvents.forEach(event => event.remove());
 
-            plans.forEach(plan => {
-                displayPlan(plan); // Display each plan
-            });
+            plans.forEach(displayPlan);
+
+            if (!caloriesCalculated) {
+                displayRecipeDetails();
+                caloriesCalculated = true;
+            }
+            calculateTotalMeals();
         })
         .catch(error => console.error('Error fetching plans:', error));
 }
 
+
+function checkedUser(){
+    fetch('/check-session', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.loggedIn) {
+            currentUser = data.user.id;
+            console.log(currentUser);
+
+            calculateTotalMeals();
+        } else {
+            console.error('User not logged in');
+        }
+    })
+    .catch(error => {
+        console.error('Error checking session:', error);
+    });
+}
 // Function to submit the plan form
     function addPlan(time) {
     const currentDayElem = document.getElementById('currentDay').textContent;
     const plan = {
-        user_id: 1,
+        user_id: currentUser,
         recipe_id: selectedRecipeId,
         title: document.getElementById('planTitle').value,
         description: document.getElementById('planDescription').value,
@@ -307,11 +291,11 @@ function getPlans() {
     })
     .then(response => response.json())
     .then(() => {
-        // Reset form or perform actions after success
         closeModal();
         document.getElementById('addPlanForm').reset();
-        selectedRecipeId = null;
         getPlans();
+        calculateCalories(null, 'add')
+        selectedRecipeId = null;
     });
 }
 
@@ -376,21 +360,211 @@ function populateRecipeDropdown(recipes) {
         const selectedRecipe = recipes.find(recipe => recipe.recipe_id == selectedRecipeId);
         if (selectedRecipe) {
             initializeUpdateViewDetailsButton();
-            
-            // document.getElementById('planTitle').value = selectedRecipe.title; // Update title based on selection
         }
     });
 }
 
-// Nutrition Cases and Calories Here
+function removeCalories(id) {
+    const matchedPlan = plansArr.find(plan => plan.planner_id === id);
+    const recipeId = matchedPlan.recipe_id; // Get the recipe_id from the matched plan
+
+    if (!matchedPlan) {
+        console.error('Plan not found for the given planner_id:', id);
+        return;
+    }
+    fetch(`/recipes/${recipeId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Recipe not found');
+            }
+            return response.json();
+        })
+        .then(recipe => {
+            // Fetch nutrition value for each ingredient in the recipe
+            fetch(`/nutritions/${recipeId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Nutritional data for recipe ID ${recipeId} not found`);
+                    }
+                    return response.json();
+                })
+                .then(nutrition => {
+                    // Assuming nutrition is an array, process each item's calories
+                    if (nutrition.length > 0) {
+                        nutrition.forEach(item => {
+                            totalCalories -= parseInt(item.calories);
+                        });
+                    } else {
+                        console.error(`No nutritional data found for recipe ID ${recipeId}.`);
+                    }
+                    
+                    const caloriesElement = document.getElementById('total-calories');
+                    caloriesElement.textContent = totalCalories;
+                })
+                .catch(error => {
+                    console.error(`Error fetching nutrition data for recipe ID ${recipeId}:`, error);
+                });
+        })
+        .catch(error => console.error('Error fetching recipe details:', error));
+}
+
+function addCalories(){
+    console.log('Calling sss');
+    const recipeId = selectedRecipeId;
+    if (!recipeId) {
+        console.error('No recipe ID found in the URL');
+        return;
+    }
+    // Fetch the recipe details from your server using the recipe ID
+    fetch(`/recipes/${recipeId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Recipe not found');
+            }
+            return response.json();
+        })
+        .then(recipe => {
+             //Fetch nutrition value for each ingridient in recipe
+            fetch(`/nutritions/${recipeId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Nutritional data for ${recipe} not found`);
+                }
+                return response.json();
+            })
+            .then(nutrition => {
+                for(let i = 0; i<nutrition.length; i++){
+                    totalCalories += parseInt(nutrition[i].calories);
+                }
+                const calories = document.getElementById('total-calories');
+                calories.textContent = totalCalories;
+            })
+            .catch(error => {
+                console.error(`Error fetching nutrition data for ${recipe}:`, error);
+            });
+        })
+        .catch(error => console.error('Error fetching recipe details:', error));
+}
+
+function calculateCalories(id, type) {
+    if(id != null && type == 'update'){
+        removeCalories(id);
+        addCalories();
+    }
+    else if(id != null && type == 'delete'){
+        removeCalories(id);
+    }
+    else if(id == null && type == 'add'){
+        addCalories();
+    }
+}
+
+function displayRecipeDetails() {
+    console.log('Calling simon');
+    // Reset totalCalories for the new calculation
+    totalCalories = 0;
+
+    // Get the current date string to match with plansArr
+    const currentDateString = currentDayElem.textContent;
+
+    // Filter plansArr to only include the plans for the current date
+    const todayPlans = plansArr.filter(plan => plan.date === currentDateString);
+
+    if (todayPlans.length > 0) {
+        // Iterate through each plan for today
+        todayPlans.forEach(plan => {
+            const currRecipeId = plan.recipe_id; // Get the recipe ID from the plan
+
+            fetch(`/nutritions/${currRecipeId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Nutritional data for ${currRecipeId} not found`);
+                }
+                return response.json();
+            })
+            .then(nutrition => {
+                nutrition.forEach(item => {
+                    totalCalories += parseInt(item.calories);
+                });
+
+                // Update the total calories display
+                const calories = document.getElementById('total-calories');
+                calories.textContent = totalCalories;
+                // caloriesCalculated = true;
+            })
+            .catch(error => {
+                console.error(`Error fetching nutrition data for ${currRecipeId}:`, error);
+            });
+        });
+    } else {
+        // If there are no plans for today, reset the calories display
+        const calories = document.getElementById('total-calories');
+        calories.textContent = '0'; // Or leave it blank as per your preference
+    }
+}
+
+function calculateTotalMeals(){
+    let mealTotal = [];
+    console.log(currentUser);
+    fetch(`/plannersGroup/${currentUser}`)
+        .then(response => response.json())
+        .then(plans => {
+            console.log('sorting', plans);
+            mealTotal = plans;
+            const calories = document.getElementById('total-meal');
+            const currentDateDisplayed = currentDayElem.textContent;
+            const mealsToday = mealTotal.filter(plan => plan.date === currentDateDisplayed);
+            
+            // Check if there are any meals today
+            if (mealsToday.length > 0) {
+                calories.textContent = mealsToday[0].total_plans;
+            } else {
+                // Reset to 0 or another default value when there are no meals for the date
+                calories.textContent = 0; // Or 1, if that's your desired default
+            }
+
+            console.log(mealsToday);
+        })
+        .catch(error => console.error('Error fetching plans:', error));
+}
+
+// function calculateWeeklyMeal() {
+//     const userId = 1;
+//     const selectedDate = 'Tuesday, Oct 1, 2024';
+
+//     // Use encodeURIComponent to encode special characters in the date
+//     const encodedDate = encodeURIComponent(selectedDate);
+//     const url = `/plannersGroup/${userId}/${encodedDate}`; // Use the encoded date here
+
+//     console.log('Fetching URL:', url); // Log the URL
+
+//     fetch(url)
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error! status: ${response.status}`);
+//             }
+//             return response.json();
+//         })
+//         .then(weeklyPlans => {
+//             console.log('Weekly Plans', weeklyPlans);
+//         })
+//         .catch(error => {
+//             console.error('Error fetching weekly plans:', error);
+//         });
+// }
+
+
 
 // Initialize the app
 function initializeApp() {
+    checkedUser();
     initializeDate();
     initializeAddButtonListeners();
     initializeUpdateButton();
     getPlans();
     getRecipes();
+    // calculateTotalMeals();
+    // displayRecipeDetails();
 }
 
 // Call to initialize everything when the page loads

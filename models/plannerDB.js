@@ -27,6 +27,60 @@ class PlannerDB {
             respond.json(result);
         });
     }
+    getPlanById(request, respond) {
+        const plannerId = request.params.id;
+        const sql = "SELECT * FROM planners WHERE planner_id = ?";
+
+        db.query(sql, [plannerId], (error, result) => {
+            if (error) {
+                throw error;
+            }
+            // Check if a recipe was found
+            if (result.length > 0) {
+                respond.json(result[0]); 
+            } else {
+                respond.status(404).json({ message: 'Planner not found' });
+            }
+        });
+    }
+    getPlansGroupedByDate(request, respond) {
+        const userId = request.params.id;
+        const sql = `
+            SELECT 
+                date, 
+                COUNT(*) AS total_plans 
+            FROM planners
+            WHERE user_id = ?
+            GROUP BY date;
+        `;
+    
+        db.query(sql, [userId], (error, result) => {
+            if (error) {
+                return respond.status(500).json({ error: error.message });
+            }
+            respond.json(result);
+        });
+    }
+    getPlansGroupedByWeek(request, respond) {
+        const userId = request.params.id; 
+        const selectedDate = decodeURIComponent(request.params.date);
+        const sql = `
+           SELECT 
+            DATE_FORMAT(STR_TO_DATE(date, '%W, %b %e, %Y'), '%Y-%u') AS year_week, 
+            COUNT(*) AS total_plans 
+            FROM planners
+            WHERE user_id = ?
+            GROUP BY year_week
+            HAVING year_week = DATE_FORMAT(STR_TO_DATE(?, '%W, %b %e, %Y'), '%Y-%u');
+        `;
+        db.query(sql, [userId, selectedDate], (error, result) => {
+            if (error) {
+                return respond.status(500).json({ error: error.message });
+            }
+            respond.json(result); // Return total plans per week
+        });
+    }
+
     addPlan(request, respond) {
         const plannerObject = new Planner(
             null, 

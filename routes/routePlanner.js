@@ -9,12 +9,18 @@ function routePlanner(app) {
        .get(plannerDBObject.getAllPlans);
     
     app.route('/planners/:id')
-    //   .get(plannerDBObject.getRecipeById)
+      .get(plannerDBObject.getPlanById)
        .put(plannerDBObject.updatePlan)
        .delete(plannerDBObject.deletePlan);
 
    app.route('/planners/:date')
        .get(plannerDBObject.getPlansByDate);
+
+    app.route('/plannersGroup/:id/:date')
+       .get(plannerDBObject.getPlansGroupedByWeek);
+    
+    app.route('/plannersGroup/:id')
+        .get(plannerDBObject.getPlansGroupedByDate);
 }
 
 module.exports = { routePlanner };

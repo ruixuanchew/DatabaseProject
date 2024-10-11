@@ -19,64 +19,6 @@
 
     <!-- Custom Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-
-    <style>
-        /* CSS for dark overlay */
-        #overlay {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999; /* Ensure it is above other content */
-        }
-
-        /* CSS for the recipe form modal */
-        #recipeFormModal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%; /* Width as a percentage of the viewport */
-            max-width: 600px; /* Optional max width */
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-            display: none; /* Hidden by default */
-            z-index: 1000; /* Ensure it is above other content */
-            overflow-y: auto; /* Allow vertical scrolling */
-            max-height: 80%; /* Limit height to a percentage of the viewport */
-        }
-
-        #recipeFormModal h4 {
-            margin-bottom: 20px;
-        }
-
-        #recipeFormModal button {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* Shadow effect for the dashboard content */
-        .dashboard-content {
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 20px; /* Optional: add some padding */
-            background-color: white; /* Ensure the background is white to see the shadow */
-            border-radius: 8px; /* Optional: rounded corners */
-            margin: 0 auto; /* Centers the content */
-        }
-
-        /* Alternate row colors in the recipe table */
-        .table tbody tr:nth-child(odd) {
-            background-color: #f9f9f9; /* Light grey for odd rows */
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: #ffffff; /* White for even rows */
-        }
-    </style>
 </head>
 
 <body>
@@ -126,7 +68,7 @@
                 <!-- Admin CRUD Table (Hidden for non-admin users) -->
                 <div id="admin-crud" style="display:none;" class="mt-4">
                     <h4>Admin Recipe Management</h4>
-                    <button class="btn btn-success mb-3" onclick="openRecipeForm()">Add New Recipe</button>
+                    <button class="btn btn-success mb-3" id="add-button">Add New Recipe</button>
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -199,171 +141,15 @@
                 <input type="text" id="recipeSearchTerms" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Save Recipe</button>
-            <button type="button" class="btn btn-secondary" onclick="closeRecipeForm()">Cancel</button>
+            <button type="button" class="btn btn-secondary" id="cancel-button" onclick="closeRecipeForm()">Cancel</button>
         </form>
     </div>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/JavaScript" src = "js/dashboard.js"></script>
     <script src="js/main.js"></script>
-
-    <script>
-        // Fetch user session data and display it on the dashboard
-        fetch('/check-session', {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.loggedIn) {
-                // Display user information
-                document.getElementById('username').innerText = data.user.username;
-                document.getElementById('user-info-username').innerText = data.user.username;
-                document.getElementById('user-info-email').innerText = data.user.email;
-
-                // Check if user is admin
-                if (data.user.email === 'admin@admin.com') {
-                    document.getElementById('admin-crud').style.display = 'block'; // Show CRUD table
-                    loadRecipes(); // Load recipes for CRUD table
-                }
-            } else {
-                // Redirect to login if the user is not logged in
-                window.location.href = 'login.html';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching session:', error);
-            window.location.href = 'login.html'; // Redirect to login on error
-        });
-
-        // Load all recipes on page load
-        function loadRecipes() {
-            fetch('/recipes', { method: 'GET' })
-                .then(response => response.json())
-                .then(recipes => {
-                    const recipeTableBody = document.getElementById('recipe-table-body');
-                    recipeTableBody.innerHTML = ''; // Clear the table
-                    recipes.forEach(recipe => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${recipe.recipe_id}</td>
-                            <td>${recipe.name}</td>
-                            <td>${recipe.description}</td>
-                            <td>${recipe.ingredients}</td>
-                            <td>${recipe.serving_size}</td>
-                            <td>${recipe.servings}</td>
-                            <td>${recipe.steps}</td>
-                            <td>${recipe.tags}</td>
-                            <td>${recipe.search_terms}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="editRecipe(${recipe.recipe_id})">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteRecipe(${recipe.recipe_id})">Delete</button>
-                            </td>
-                        `;
-                        recipeTableBody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Error loading recipes:', error));
-        }
-
-        // Open the form to add or edit a recipe
-        function openRecipeForm(recipe = null) {
-            document.getElementById('overlay').style.display = 'block'; // Show overlay
-            document.getElementById('recipeFormModal').style.display = 'block'; // Show the form
-            if (recipe) {
-                document.getElementById('recipeId').value = recipe.recipe_id;
-                document.getElementById('recipeName').value = recipe.name;
-                document.getElementById('recipeDescription').value = recipe.description;
-                document.getElementById('recipeIngredients').value = recipe.ingredients;
-                document.getElementById('recipeIngredientsRaw').value = recipe.ingredients_raw;
-                document.getElementById('recipeServingSize').value = recipe.serving_size;
-                document.getElementById('recipeServings').value = recipe.servings;
-                document.getElementById('recipeSteps').value = recipe.steps;
-                document.getElementById('recipeTags').value = recipe.tags;
-                document.getElementById('recipeSearchTerms').value = recipe.search_terms;
-            } else {
-                document.getElementById('recipeForm').reset();
-            }
-        }
-
-        // Close the recipe form
-        function closeRecipeForm() {
-            document.getElementById('overlay').style.display = 'none'; // Hide overlay
-            document.getElementById('recipeFormModal').style.display = 'none'; // Hide the form
-        }
-
-        // Save the recipe (create or update)
-        document.getElementById('recipeForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const recipeId = document.getElementById('recipeId').value;
-            const name = document.getElementById('recipeName').value;
-            const description = document.getElementById('recipeDescription').value;
-            const ingredients = document.getElementById('recipeIngredients').value;
-            const ingredients_raw = document.getElementById('recipeIngredientsRaw').value;
-            const serving_size = document.getElementById('recipeServingSize').value;
-            const servings = document.getElementById('recipeServings').value;
-            const steps = document.getElementById('recipeSteps').value;
-            const tags = document.getElementById('recipeTags').value;
-            const search_terms = document.getElementById('recipeSearchTerms').value;
-
-            const data = { name, description, ingredients, ingredients_raw, serving_size, servings, steps, tags, search_terms };
-
-            const method = recipeId ? 'PUT' : 'POST';
-            const endpoint = recipeId ? `/recipes/${recipeId}` : '/recipes';
-
-            fetch(endpoint, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json())
-                .then(result => {
-                    alert("Recipe updated!");
-                    closeRecipeForm();
-                    loadRecipes(); // Reload recipes after saving
-                })
-                .catch(error => console.error('Error saving recipe:', error));
-        });
-
-        // Edit a recipe: Fetch the recipe details and open the form
-        function editRecipe(recipeId) {
-            fetch(`/recipes/${recipeId}`, { method: 'GET' })
-                .then(response => response.json())
-                .then(recipe => openRecipeForm(recipe))  // Pre-fill the form with recipe details
-                .catch(error => console.error('Error fetching recipe:', error));
-        }
-
-        // Delete a recipe
-        function deleteRecipe(recipeId) {
-            if (confirm('Are you sure you want to delete this recipe?')) {
-                fetch(`/recipes/${recipeId}`, { method: 'DELETE' })
-                    .then(response => response.json())
-                    .then(result => {
-                        alert("Recipe deleted!");
-                        loadRecipes();
-                    })
-                    .catch(error => console.error('Error deleting recipe:', error));
-            }
-        }
-
-        // Handle logout
-        document.getElementById('logout-btn').addEventListener('click', function () {
-            fetch('/logout', { method: 'GET' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Logout successful!');
-                        window.location.href = 'login.html'; // Redirect to login page
-                    }
-                })
-                .catch(error => console.error('Error logging out:', error));
-        });
-
-        // Close the overlay when clicked
-        document.getElementById('overlay').addEventListener('click', closeRecipeForm);
-    </script>
 
 </body>
 
