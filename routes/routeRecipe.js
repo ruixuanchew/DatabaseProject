@@ -24,6 +24,9 @@ function routeRecipe(app) {
 
   app.route('/search')
     .get(recipeDBObject.getRecipeBySearch);
+
+    app.route('/recipes/sorted/:page/:limit')
+    .get(recipeDBObject.getSortedRecipes);
 }
 
 module.exports = { routeRecipe };

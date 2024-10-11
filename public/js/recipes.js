@@ -25,6 +25,51 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchButton').addEventListener('click', function (event) {
         searchRecipes();         // Execute the search
     });
+    document.getElementById('sortOptions').addEventListener('change', function() {
+        const selectedSort = this.value;
+        let sortBy = 'default';
+        let sortDirection = 'ASC';
+    
+        // Update sortBy and sortDirection based on selection
+        switch (selectedSort) {
+            case 'name_asc':
+                sortBy = 'name';
+                sortDirection = 'ASC';
+                break;
+            case 'name_desc':
+                sortBy = 'name';
+                sortDirection = 'DESC';
+                break;
+            case 'serving_size_asc':
+                sortBy = 'serving_size';
+                sortDirection = 'ASC';
+                break;
+            case 'serving_size_desc':
+                sortBy = 'serving_size';
+                sortDirection = 'DESC';
+                break;
+            default:
+                sortBy = null; // For "Default", reset to null
+                break;
+        }
+    
+        // Update URL parameters only if sortBy is not null
+        const urlParams = new URLSearchParams(window.location.search);
+        if (sortBy) {
+            urlParams.set('sortBy', sortBy);
+            urlParams.set('sortDirection', sortDirection);
+        } else {
+            urlParams.delete('sortBy'); // Remove sorting params if "Default" is selected
+            urlParams.delete('sortDirection');
+        }
+    
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        history.pushState({ sortBy, sortDirection, page: currentPage }, '', newUrl); // Update the URL without reloading
+
+        getRecipes();
+        
+    });
+
 });
 
 // Future for optimisation 
@@ -42,14 +87,33 @@ document.addEventListener('DOMContentLoaded', () => {
 //     .catch(error => console.error('Error fetching recipes:', error));
 // }
 function getRecipes() {
-    fetch('/recipes')
-        .then(response => response.json())
-        .then(data => {
-            recipes = data; // Store fetched recipes
-            displayRecipes(currentPage);
-            setupPagination();
-        })
-        .catch(error => console.error('Error fetching recipes:', error));
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortBy = urlParams.get('sortBy') || null; // Get sortBy from URL
+    const sortDirection = urlParams.get('sortDirection') || null; // Get sortDirection from URL
+    const page = currentPage || 1; // Ensure the current page is set
+    const limit = recipesPerPage || 20; // Set the limit to 20 by default
+
+    // Fetch sorted recipes if sort parameters exist
+    if (sortBy) {
+        fetch(`/recipes/sorted/${page}/${limit}?sortBy=${sortBy}&sortDirection=${sortDirection}`)
+            .then(response => response.json())
+            .then(data => {
+                recipes = data; // Store fetched recipes
+                displayRecipes(currentPage); // Display them on the page
+                setupPagination(); // Setup pagination
+            })
+            .catch(error => console.error('Error fetching sorted recipes:', error));
+    } else {
+        // Fetch all recipes if no sort is applied
+        fetch('/recipes')
+            .then(response => response.json())
+            .then(data => {
+                recipes = data; // Store fetched recipes
+                displayRecipes(currentPage); // Display them on the page
+                setupPagination(); // Setup pagination
+            })
+            .catch(error => console.error('Error fetching recipes:', error));
+    }
 }
 
 function displayRecipes(page) {
