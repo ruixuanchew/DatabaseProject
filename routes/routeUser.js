@@ -82,6 +82,21 @@ function routeUser(app) {
             res.json({ loggedIn: false });
         }
     });
+
+     // Update username route
+     app.put('/update-username', (req, res) => {
+        // Check if the user is logged in
+        if (!req.session.user) {
+            return res.status(401).json({ success: false, message: 'User not logged in' });
+        }
+
+        const newUsername = req.body.username;
+        const userId = req.session.user.id; // Assuming user is logged in and session contains userId
+
+        // Call the updateUser method in UserDB to update the username
+        userDBObject.updateUser({ params: { id: userId }, body: { username: newUsername } }, res);
+
+    });
 }
 
 module.exports = { routeUser };

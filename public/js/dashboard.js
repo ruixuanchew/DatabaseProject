@@ -9,12 +9,15 @@ document.addEventListener("DOMContentLoaded", () => {
             // Display user information
             document.getElementById('username').innerText = data.user.username;
             document.getElementById('user-info-username').innerText = data.user.username;
-            document.getElementById('user-info-email').innerText = data.user.email;
+            document.getElementById('user-info-email').innerText = data.user.email; 
 
             // Check if user is admin
             if (data.user.email === 'admin@admin.com') {
                 document.getElementById('admin-crud').style.display = 'block'; // Show CRUD table
                 loadRecipes(); // Load recipes for CRUD table
+            } else {
+                // Show the username edit option for non-admin users
+                document.getElementById('edit-username-section').style.display = 'block';
             }
         } else {
             // Redirect to login if the user is not logged in
@@ -24,6 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(error => {
         console.error('Error fetching session:', error);
         window.location.href = 'login.html'; // Redirect to login on error
+    });
+
+    // Handle username update for non-admin users
+    document.getElementById('update-username-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newUsername = document.getElementById('new-username').value;
+
+        fetch('/update-username', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: newUsername })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Username updated successfully!");
+                document.getElementById('user-info-username').innerText = newUsername;
+                document.getElementById('username').innerText = newUsername;
+            } else {
+                alert("Failed to update username.");
+            }
+        })
+        .catch(error => console.error('Error updating username:', error));
     });
 
     // Load all recipes on page load

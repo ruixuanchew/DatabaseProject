@@ -59,6 +59,17 @@
                     <p><strong>Email:</strong> <span id="user-info-email"></span></p>
                 </div>
 
+                <!-- Username Edit Section (Visible for non-admin users) -->
+                <div id="edit-username-section" style="display:none;" class="mt-4">
+                    <h4>Edit Your Username</h4>
+                    <form id="update-username-form">
+                        <div class="form-group mb-2">
+                            <input type="text" id="new-username" class="form-control" required>
+                            <button type="submit" class="btn btn-primary">Update Username</button>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Dashboard Options for All Users -->
                 <div class="text-center">
                     <a href="recipes.html" class="btn btn-primary">View Recipes</a>
