@@ -63,26 +63,17 @@ class UserDB {
     
 
     updateUser(request, respond) {
-        const userObject = new User(
-            request.params.id,
-            request.body.username,
-            request.body.email,
-            request.body.password
-        );
+        const userId = request.params.id;
+        const newUsername = request.body.username;
 
-        const sql = "UPDATE users SET username = ?, email = ?, password = ? WHERE user_id = ?";
-        const values = [
-            userObject.getUsername(),
-            userObject.getEmail(),
-            userObject.getPassword(), // Again, consider hashing this
-            userObject.getId()
-        ];
+        const sql = "UPDATE users SET username = ? WHERE user_id = ?";
+        const values = [newUsername, userId];
 
         db.query(sql, values, (error, result) => {
             if (error) {
                 throw error;
             }
-            respond.json(result);
+            respond.status(200).json({ success: true, message: 'User updated successfully', result });
         });
     }
 
