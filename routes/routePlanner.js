@@ -16,8 +16,8 @@ function routePlanner(app) {
    app.route('/planners/:date')
        .get(plannerDBObject.getPlansByDate);
 
-    app.route('/plannersGroup/:id/:date')
-       .get(plannerDBObject.getPlansGroupedByWeek);
+   app.route('/plannersUser/:user_id')
+       .get(plannerDBObject.getPlanByUserId);
     
     app.route('/plannersGroup/:id')
         .get(plannerDBObject.getPlansGroupedByDate);

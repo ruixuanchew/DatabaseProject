@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 50); // Short delay to allow for initial position setting
         }, 500); // Wait for the transition to finish
     });
+    checkUser();
 });
 
 // Handle Registration when the "Create Account" button is clicked in the register form
@@ -118,3 +119,25 @@ document.querySelector('.login-card .btn-primary').addEventListener('click', fun
         alert('Error: ' + error.message); // Catch any errors from the server or network
     });
 });
+
+function checkUser() {
+    fetch('/check-session', {
+        method: 'GET'
+    })
+        .then(response => response.json())
+        .then(data => {
+            const plannerNav = document.getElementById('planner_nav');
+
+            if (data.loggedIn) {
+                // User is logged in, set the href to planner.html
+                plannerNav.setAttribute('href', 'planner.html');
+            } else {
+                // User is not logged in, set the href to login.html
+                plannerNav.setAttribute('href', 'login.html');
+                console.error('User not logged in');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking session:', error);
+        });
+}

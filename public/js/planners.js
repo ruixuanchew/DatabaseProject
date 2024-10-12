@@ -1,10 +1,12 @@
-let recipes = [];
-let plansArr = [];
-let selectedRecipeId = null;
+let recipes = []; // Array to store recipes
+let plansArr = []; // Array to store plans
+let selectedRecipeId = null; 
 let selectedPlanId = null;
-// Get and display the current date
+
+// Date variables
 const currentDate = new Date();
 const currentDayElem = document.getElementById('currentDay');
+
 let currentUser;
 let totalCalories = 0;
 let caloriesCalculated = false;
@@ -21,7 +23,6 @@ function prevDay() {
     updateCurrentDay(currentDate);
     getPlans(); 
     caloriesCalculated = false;
-    // calculateWeeklyMeal();
 }
 
 // Function to move to the next day
@@ -30,7 +31,6 @@ function nextDay() {
     updateCurrentDay(currentDate);
     getPlans(); 
     caloriesCalculated = false;
-    // calculateWeeklyMeal();
 }
 
 // Initialize with today's date
@@ -47,7 +47,7 @@ const addButtons = document.querySelectorAll('.add-btn'); // Select all add butt
 const backdrop = createBackdrop();
 let currentTime;
 
-// Function to create the backdrop element
+// Function to create the backdrop element for modal
 function createBackdrop() {
     const backdropElem = document.createElement('div');
     backdropElem.className = 'modal-backdrop'; // Set class for styling
@@ -85,6 +85,7 @@ function openUpdateModal(plan) {
     // Store the current plan ID for updating
     selectedPlanId = plan.planner_id;
 }
+
 // Function to close the modal
 function closeModal() {
     modal.style.display = 'none';
@@ -97,7 +98,7 @@ function closeUpdateModal() {
     backdrop.classList.remove('show');
 }
 
-// Function to handle clicks on "Add" buttons
+// Function to handle buttons in add modal
 function initializeAddButtonListeners() {
     addButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -111,9 +112,10 @@ function initializeAddButtonListeners() {
         });
     });
 
+    // Get user selected recipe dropdown value
     const recipeDropdown = document.getElementById('recipeSelect');
     recipeDropdown.addEventListener('change', function() {
-        selectedRecipeId = this.value; // Update the selected recipe ID
+        selectedRecipeId = this.value; 
     });
 
     modal.querySelector('.btn-close').addEventListener('click', closeModal);
@@ -124,20 +126,17 @@ function initializeAddButtonListeners() {
         }
     });
 
-    // Set up the save button listener only once
     const saveButton = document.getElementById('savePlanButton');
 
-    // Define the save plan handler function
     function savePlanHandler() {
-        addPlan(currentTime); // Use the current time when saving
+        addPlan(currentTime); 
     }
 
-    // Remove any existing listener before adding a new one
     saveButton.removeEventListener('click', savePlanHandler); // Remove old listener
-    saveButton.addEventListener('click', savePlanHandler);
+    saveButton.addEventListener('click', savePlanHandler); 
 }
 
-// Function to handle the update button click
+// Function to handle buttons in update modal
 function initializeUpdateButton() {
     const updateButton = document.getElementById('saveUpdatePlanButton');
     const deleteButton = document.getElementById('deletePlanButton');
@@ -150,18 +149,22 @@ function initializeUpdateButton() {
         }
     });
 
+    // Function that handles update 
     function updatePlanHandler() {
         const updatedTitle = document.getElementById('updatePlanTitle').value;
         const updatedDescription = document.getElementById('updatePlanDescription').value;
 
         const updatedRecipeId = document.getElementById('updateRecipeSelect').value;
         selectedRecipeId = updatedRecipeId;
+
+        // Create a new JSON for the updated values
         const updatedPlan = {
             recipe_id: updatedRecipeId,
             title: updatedTitle,
             description: updatedDescription,
         };
 
+        // Update plan API call
         fetch(`/planners/${selectedPlanId}`, {
             method: 'PUT',
             headers: {
@@ -171,14 +174,17 @@ function initializeUpdateButton() {
         })
         .then(response => response.json())
         .then(() => {
+            // Update content in front end
             selectedEventDiv.textContent = `${updatedTitle}: ${updatedDescription}`;
             closeUpdateModal();
             getPlans(); 
-            calculateCalories(selectedPlanId, 'update');
-            selectedRecipeId = null;
+            calculateCalories(selectedPlanId, 'update'); // Re calculate calories upon updating
+            selectedRecipeId = null; 
         })
         .catch(error => console.error('Error updating plan:', error));
     }
+
+    // Function that handles delete
     function deletePlanHandler() {
         fetch(`/planners/${selectedPlanId}`, {
             method: 'DELETE', 
@@ -190,7 +196,7 @@ function initializeUpdateButton() {
         .then(() => {
             closeUpdateModal();
             getPlans(); 
-            calculateCalories(selectedPlanId, 'delete');
+            calculateCalories(selectedPlanId, 'delete'); // Re calculate calories upon deleting
         })
         .catch(error => console.error('Error updating plan:', error));
     }
@@ -199,10 +205,12 @@ function initializeUpdateButton() {
     deleteButton.addEventListener('click', deletePlanHandler);
 }
 
+// Display of plan in calender
 function displayPlan(plan) {
     const maxTitleLength = 30; // Set the max length for the title
     const maxDescriptionLength = 30; // Set the max length for the description
     
+    // Replaces too long values with ellipses 
     const truncatedTitle = plan.title.length > maxTitleLength 
         ? plan.title.slice(0, maxTitleLength) + '...' 
         : plan.title;
@@ -211,6 +219,7 @@ function displayPlan(plan) {
         ? plan.description.slice(0, maxDescriptionLength) + '...' 
         : plan.description;
 
+    // Populate time slots in planner
     const timeSlots = document.querySelectorAll('.time-slot');
     timeSlots.forEach(slot => {
         if (slot.textContent.trim().includes(plan.time) && plan.date === currentDayElem.textContent) {
@@ -223,7 +232,7 @@ function displayPlan(plan) {
 
             eventDiv.addEventListener('click', function() {
                 selectedEventDiv = eventDiv; // Store the reference to the clicked event div
-                openUpdateModal(plan); // Open the update modal with plan details
+                openUpdateModal(plan); // Open the update modal with plan details when clicked on event
             });
 
             timeSlotContainer.appendChild(eventDiv);
@@ -231,48 +240,46 @@ function displayPlan(plan) {
     });
 }
 
+// Get plans for specific user
 function getPlans() {
-    fetch('/planners')
-        .then(response => response.json())
+    fetch(`/plannersUser/${currentUser}`)
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return [];
+                }
+                throw new Error('Failed to fetch plans');
+            }
+            return response.json();
+        })
         .then(plans => {
-            plansArr = plans;
+            plansArr = plans || []; // Ensure plans is always an array
+            
+            // Clear existing events
             const existingEvents = document.querySelectorAll('.event-title');
             existingEvents.forEach(event => event.remove());
 
-            plans.forEach(displayPlan);
+            // Display plans if they exist
+            if (plansArr.length > 0) {
+                plansArr.forEach(displayPlan);
+            }
 
+            // Only calculate calories if it hasn't been done yet
             if (!caloriesCalculated) {
                 displayRecipeDetails();
                 caloriesCalculated = true;
             }
+
             calculateTotalMeals();
         })
         .catch(error => console.error('Error fetching plans:', error));
 }
 
-
-function checkedUser(){
-    fetch('/check-session', {
-        method: 'GET'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.loggedIn) {
-            currentUser = data.user.id;
-            console.log(currentUser);
-
-            calculateTotalMeals();
-        } else {
-            console.error('User not logged in');
-        }
-    })
-    .catch(error => {
-        console.error('Error checking session:', error);
-    });
-}
-// Function to submit the plan form
-    function addPlan(time) {
+// Handles add plan
+function addPlan(time) {
     const currentDayElem = document.getElementById('currentDay').textContent;
+
+    // Create new JSON for adding of values
     const plan = {
         user_id: currentUser,
         recipe_id: selectedRecipeId,
@@ -293,23 +300,49 @@ function checkedUser(){
     .then(() => {
         closeModal();
         document.getElementById('addPlanForm').reset();
-        getPlans();
-        calculateCalories(null, 'add')
+        caloriesCalculated = false; 
+        getPlans(); 
         selectedRecipeId = null;
     });
 }
 
+// Check if user is logged in
+function checkedUser(){
+    fetch('/check-session', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.loggedIn) {
+            const userLink = document.getElementById('user-link');
+            currentUser = data.user.id;
+            getPlans();
+            userLink.href = 'dashboard.html';
+        } else {
+            console.error('User not logged in');
+            userLink.href = 'login.html';
+        }
+    })
+    .catch(error => {
+        console.error('Error checking session:', error);
+    });
+}
+
+
+
+// Get recipes by name and id for the dropdown 
 function getRecipes() {
-    fetch('/recipes')  
+    fetch('/recipesNameId')  
         .then(response => response.json())
         .then(data => {
             recipes = data;
+            console.log('recipes', recipes);
             populateRecipeDropdown(recipes);
         })
         .catch(error => console.error('Error fetching recipes:', error));
 }
 
-// Inside populateRecipeDropdown function
+// Populate recipe dropdown
 function populateRecipeDropdown(recipes) {
     const dropdown = document.getElementById('recipeSelect');
     const updateDropdown = document.getElementById('updateRecipeSelect');
@@ -349,21 +382,15 @@ function populateRecipeDropdown(recipes) {
     dropdown.addEventListener('change', function() {
         selectedRecipeId = this.value; // Update the selected recipe ID
         const selectedRecipe = recipes.find(recipe => recipe.recipe_id == selectedRecipeId);
-        if (selectedRecipe) {
-            initializeViewDetailsButton();
-            
-            // document.getElementById('planTitle').value = selectedRecipe.title; // Update title based on selection
-        }
     });
     updateDropdown.addEventListener('change', function() {
         selectedRecipeId = this.value; // Update the selected recipe ID
         const selectedRecipe = recipes.find(recipe => recipe.recipe_id == selectedRecipeId);
-        if (selectedRecipe) {
-            initializeUpdateViewDetailsButton();
-        }
     });
 }
 
+// Calories Functions
+// Remove Calories
 function removeCalories(id) {
     const matchedPlan = plansArr.find(plan => plan.planner_id === id);
     const recipeId = matchedPlan.recipe_id; // Get the recipe_id from the matched plan
@@ -389,10 +416,9 @@ function removeCalories(id) {
                     return response.json();
                 })
                 .then(nutrition => {
-                    // Assuming nutrition is an array, process each item's calories
                     if (nutrition.length > 0) {
                         nutrition.forEach(item => {
-                            totalCalories -= parseInt(item.calories);
+                            totalCalories -= parseInt(item.calories); // Decrement calories
                         });
                     } else {
                         console.error(`No nutritional data found for recipe ID ${recipeId}.`);
@@ -408,8 +434,8 @@ function removeCalories(id) {
         .catch(error => console.error('Error fetching recipe details:', error));
 }
 
+// Add calories
 function addCalories(){
-    console.log('Calling sss');
     const recipeId = selectedRecipeId;
     if (!recipeId) {
         console.error('No recipe ID found in the URL');
@@ -434,7 +460,7 @@ function addCalories(){
             })
             .then(nutrition => {
                 for(let i = 0; i<nutrition.length; i++){
-                    totalCalories += parseInt(nutrition[i].calories);
+                    totalCalories += parseInt(nutrition[i].calories); // Increment calories
                 }
                 const calories = document.getElementById('total-calories');
                 calories.textContent = totalCalories;
@@ -446,10 +472,11 @@ function addCalories(){
         .catch(error => console.error('Error fetching recipe details:', error));
 }
 
+// Calculate calories based on type and ID
 function calculateCalories(id, type) {
     if(id != null && type == 'update'){
-        removeCalories(id);
-        addCalories();
+        removeCalories(id); // Remove first
+        addCalories(); // Add calories 
     }
     else if(id != null && type == 'delete'){
         removeCalories(id);
@@ -460,7 +487,6 @@ function calculateCalories(id, type) {
 }
 
 function displayRecipeDetails() {
-    console.log('Calling simon');
     // Reset totalCalories for the new calculation
     totalCalories = 0;
 
@@ -490,7 +516,6 @@ function displayRecipeDetails() {
                 // Update the total calories display
                 const calories = document.getElementById('total-calories');
                 calories.textContent = totalCalories;
-                // caloriesCalculated = true;
             })
             .catch(error => {
                 console.error(`Error fetching nutrition data for ${currRecipeId}:`, error);
@@ -498,62 +523,41 @@ function displayRecipeDetails() {
         });
     } else {
         // If there are no plans for today, reset the calories display
+        totalCalories = 0;
         const calories = document.getElementById('total-calories');
-        calories.textContent = '0'; // Or leave it blank as per your preference
+        calories.textContent = '0'; 
     }
 }
 
-function calculateTotalMeals(){
-    let mealTotal = [];
-    console.log(currentUser);
+// Calculate meals by grouping same day count of plans
+function calculateTotalMeals() {
     fetch(`/plannersGroup/${currentUser}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return []; 
+                }
+                throw new Error('Failed to fetch plans'); 
+            }
+            return response.json(); 
+        })
         .then(plans => {
-            console.log('sorting', plans);
-            mealTotal = plans;
-            const calories = document.getElementById('total-meal');
-            const currentDateDisplayed = currentDayElem.textContent;
-            const mealsToday = mealTotal.filter(plan => plan.date === currentDateDisplayed);
-            
-            // Check if there are any meals today
-            if (mealsToday.length > 0) {
-                calories.textContent = mealsToday[0].total_plans;
-            } else {
-                // Reset to 0 or another default value when there are no meals for the date
-                calories.textContent = 0; // Or 1, if that's your desired default
+            const mealElem = document.getElementById('total-meal');
+            const currentDateDisplayed = currentDayElem ? currentDayElem.textContent : '';
+
+            if (!mealElem || !currentDateDisplayed) {
+                console.error('Error: Meal element or current date is not defined.');
+                return;
             }
 
-            console.log(mealsToday);
+            const mealsToday = plans.find(plan => plan.date === currentDateDisplayed);
+
+            mealElem.textContent = mealsToday ? mealsToday.total_plans : 0;
+
+            console.log('Meals today:', mealsToday ? mealsToday.total_plans : 'No meals today');
         })
         .catch(error => console.error('Error fetching plans:', error));
 }
-
-// function calculateWeeklyMeal() {
-//     const userId = 1;
-//     const selectedDate = 'Tuesday, Oct 1, 2024';
-
-//     // Use encodeURIComponent to encode special characters in the date
-//     const encodedDate = encodeURIComponent(selectedDate);
-//     const url = `/plannersGroup/${userId}/${encodedDate}`; // Use the encoded date here
-
-//     console.log('Fetching URL:', url); // Log the URL
-
-//     fetch(url)
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error(`HTTP error! status: ${response.status}`);
-//             }
-//             return response.json();
-//         })
-//         .then(weeklyPlans => {
-//             console.log('Weekly Plans', weeklyPlans);
-//         })
-//         .catch(error => {
-//             console.error('Error fetching weekly plans:', error);
-//         });
-// }
-
-
 
 // Initialize the app
 function initializeApp() {
@@ -561,10 +565,7 @@ function initializeApp() {
     initializeDate();
     initializeAddButtonListeners();
     initializeUpdateButton();
-    getPlans();
     getRecipes();
-    // calculateTotalMeals();
-    // displayRecipeDetails();
 }
 
 // Call to initialize everything when the page loads

@@ -5,6 +5,7 @@ const Planner = require('./planner');
 
 class PlannerDB {
 
+    // Get all plans 
     getAllPlans(request, respond) {
         const sql = "SELECT * FROM planners";
         db.query(sql, (error, result) => {
@@ -15,6 +16,7 @@ class PlannerDB {
         });
     }
 
+    // Get plans by user selected date
     getPlansByDate(request, respond) {
         const date = request.params.date;
         const sql = "SELECT * FROM planners WHERE date = ?";
@@ -27,6 +29,8 @@ class PlannerDB {
             respond.json(result);
         });
     }
+    
+    // Get plans by plan ID
     getPlanById(request, respond) {
         const plannerId = request.params.id;
         const sql = "SELECT * FROM planners WHERE planner_id = ?";
@@ -35,7 +39,6 @@ class PlannerDB {
             if (error) {
                 throw error;
             }
-            // Check if a recipe was found
             if (result.length > 0) {
                 respond.json(result[0]); 
             } else {
@@ -43,6 +46,26 @@ class PlannerDB {
             }
         });
     }
+
+    // Get plans by user ID
+    getPlanByUserId(request, respond) {
+        const userId = request.params.user_id;
+        const sql = "SELECT * FROM planners WHERE user_id = ?";
+    
+        db.query(sql, [userId], (error, result) => {
+            if (error) {
+                throw error;
+            }
+            // Check if any planners were found
+            if (result.length > 0) {
+                respond.json(result); // Return all results
+            } else {
+                respond.status(404).json({ message: 'Planner not found' });
+            }
+        });
+    }
+    
+    // Count the total plans in different dates
     getPlansGroupedByDate(request, respond) {
         const userId = request.params.id;
         const sql = `
@@ -61,26 +84,8 @@ class PlannerDB {
             respond.json(result);
         });
     }
-    getPlansGroupedByWeek(request, respond) {
-        const userId = request.params.id; 
-        const selectedDate = decodeURIComponent(request.params.date);
-        const sql = `
-           SELECT 
-            DATE_FORMAT(STR_TO_DATE(date, '%W, %b %e, %Y'), '%Y-%u') AS year_week, 
-            COUNT(*) AS total_plans 
-            FROM planners
-            WHERE user_id = ?
-            GROUP BY year_week
-            HAVING year_week = DATE_FORMAT(STR_TO_DATE(?, '%W, %b %e, %Y'), '%Y-%u');
-        `;
-        db.query(sql, [userId, selectedDate], (error, result) => {
-            if (error) {
-                return respond.status(500).json({ error: error.message });
-            }
-            respond.json(result); // Return total plans per week
-        });
-    }
 
+    // Add plans
     addPlan(request, respond) {
         const plannerObject = new Planner(
             null, 
@@ -110,6 +115,7 @@ class PlannerDB {
         });
     }
 
+    // Update Plans
     updatePlan(request, respond) {
         const plannerId = request.params.id;
         // Prepare an array to hold the fields that need to be updated and their values
@@ -163,6 +169,7 @@ class PlannerDB {
         });
     }
 
+    // Delete plans
     deletePlan(request, respond) {
         const plannerId = request.params.id;
         const sql = "DELETE FROM planners WHERE planner_id = ?";

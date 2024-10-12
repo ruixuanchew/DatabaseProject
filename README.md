@@ -1,14 +1,18 @@
-  Installations:
+#Installations:
   1. Install Node.js from the official Node.js Website (https://nodejs.org/en)
   2. Verify installation by running node -v in terminal 
-  3. Run npm install in terminal after cloning project. It should have installed express and mysql2.
+  3. Run npm install in terminal after cloning project. 
 
-  Setting up:
+#Setting up:
   1. Create a database in your local machine (e.g. MariaDB or mySQL Workbench)
   2. Go to /js/db.js, change const connection = mysql.createConnection... to your own configs
-  3. Create tables recipes, planners, users, nutritions in your local database.
-  These are what I set up as the parameters for now: 
-  recipes table: 
+  3. Run npm install in terminal after cloning project. 
+
+#Running the Application:
+  1. Type node server.js in terminal
+  2. Copy the link in console (e.g. http://localhost:3000) to a browser
+
+##recipes table: 
    +-----------------+--------------+------+-----+---------+----------------+
   | Field           | Type         | Null | Key | Default | Extra          |
   +-----------------+--------------+------+-----+---------+----------------+
@@ -22,9 +26,9 @@
   | steps           | text         | YES  |     | NULL    |                |
   | tags            | varchar(255) | YES  |     | NULL    |                |
   | search_terms    | varchar(255) | YES  |     | NULL    |                |
-  +-----------------+--------------+------+-----+---------+----------------+          
+  +-----------------+--------------+------+-----+---------+----------------+    
 
-  planners table:
+##planners table:
   +-------------+--------------+------+-----+---------+----------------+
   | Field       | Type         | Null | Key | Default | Extra          |
   +-------------+--------------+------+-----+---------+----------------+
@@ -37,7 +41,7 @@
   | date        | varchar(50)  | YES  |     | NULL    |                |
   +-------------+--------------+------+-----+---------+----------------+
 
-  users table:
+##users table:
   +----------+--------------+------+-----+---------+----------------+
   | Field    | Type         | Null | Key | Default | Extra          |
   +----------+--------------+------+-----+---------+----------------+
@@ -46,15 +50,13 @@
   | email    | varchar(255) | NO   |     | NULL    |                |
   | password | text         | NO   |     | NULL    |                |
   +----------+--------------+------+-----+---------+----------------+
-  INSERT TESTDB NUTRITION:
-  
-  nutrition table:
-  MariaDB [testdb]> SHOW COLUMNS FROM nutrition;
+
+##nutrition table:
   +--------------+--------------+------+-----+---------+----------------+
   | Field        | Type         | Null | Key | Default | Extra          |
   +--------------+--------------+------+-----+---------+----------------+
   | nutrition_id | int(11)      | NO   | PRI | NULL    | auto_increment |
-  | food_name    | varchar(255) | YES  |     | NULL    |                |
+  | food         | varchar(255) | YES  |     | NULL    |                |
   | measure      | varchar(255) | YES  |     | NULL    |                |
   | grams        | int(11)      | YES  |     | NULL    |                |
   | calories     | int(11)      | YES  |     | NULL    |                |
@@ -65,30 +67,25 @@
   | category     | varchar(255) | YES  |     | NULL    |                |
   +--------------+--------------+------+-----+---------+----------------+
 
-  INSERT TESTDB EXAMPLE NUTRITION:
-  INSERT INTO nutrition (food_name, measure, grams, calories, protein, fat, fiber, carbs, category) VALUES
-  ('Cow Milk','1 qt.', 976, 660, 32, 40, 0, 48, 'Dairy products'),
-  ('Milk Skim','1 qt.', 984, 360, 36, NULL, 0, 52, 'Dairy products'),
-  ('Buttermilk','1 cup', 246, 127, 9, 5, 0, 13, 'Dairy products'),
-  ('Fortified Milk','1 cup', 252, 345, 16, 20, 0, 24, 'Dairy products'),
-  ('Powdered Milk','6 cups', 1419, 1373, 89, 42, 1.4, 119, 'Dairy products');
+#Important Login Details
+Admin: Register account with email = admin@admin.com, to access admin dashboard
 
-  Understanding the code
-  1. Whenever you have any changes in fields like u added or removed a new field 
-     - Go to /models/?.js (e.g. /models/recipe.js)
-     - Follow the flow I think u smart enough to understand to add or remove fields
-  2. Whenever you want to add a new query such as CRUD queries or JOIN queries 
-     - Go to /models/?DB.js (e.g. /models/recipeDB.js)
-     - Go to /routes/route?.js (e.g. /routes/routeRecipe.js)
-     - Add the respective request function and new function added 
-     - GET, POST (ADD), PUT (UPDATE), DELETE
+#Understanding the code
+#1. Query Codes 
+- /models/: Contains our queries for different tables (e.g. nutritionDB.js, plannerDB.js, recipeDB.js, userDB.js)
 
-  3. Displaying it in UI, /public/js/?.js (e.g. /public/js/recipes.js)
-     - See my example of displaying recipes
-  
-  4. All HTML files are in /public folder. 
+#2. API Calls
+- /routes/: Contains the API call to our queries (e.g. routePlanner.js, routeNutrition.js, routeRecipe.js, routeUser.js)
 
-  5. Start page is recipes.html
+#3. Frontend Call of Queries
+- /public/js/: Contains most of our frontend communication with database. It also contains dynamic loading and other logic.
 
+#4. Frontend Design
+- /public/: HTML files contain all our design for website
+- /public/css/styles.css: Contains our styling of website
 
-  
+#5. Server Logic
+- server.js: Contains route declaration, sessions, port details, and more.
+
+#6. Database Logic
+- /js/db.js: Contains details required to connect to database 

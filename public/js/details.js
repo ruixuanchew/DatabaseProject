@@ -53,6 +53,8 @@ function displayRecipeDetails() {
             .catch(error => {
                 console.error(`Error fetching nutrition data for ${recipe}:`, error);
             });
+            const recipeTitle = document.getElementById('recipe-title');
+            recipeTitle.textContent = recipe.name;
             // Populate the Ingredients section
             const ingredientsList = document.getElementById('recipeIngredients');
             ingredientsList.innerHTML = '';
