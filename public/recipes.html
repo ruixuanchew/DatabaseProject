@@ -14,7 +14,8 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Lora:wght@600;700&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Lora:wght@600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -33,47 +34,48 @@
 
 <body>
     <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" role="status"></div>
     </div>
     <!-- Spinner End -->
 
-        <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
-            <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
-                <h1 class="fw-bold text-primary m-0">F<span class="text-secondary">oo</span>dy</h1>
-            </a>
-            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="recipes.html" class="nav-item nav-link active">Recipes</a>
-                    <a href="planner.html" class="nav-item nav-link active" id="planner_nav">Planner</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu m-0">
-                            <a href="blog.html" class="dropdown-item">Blog Grid</a>
-                            <a href="feature.html" class="dropdown-item">Our Features</a>
-                            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                            <a href="404.html" class="dropdown-item">404 Page</a>
-                        </div>
+    <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
+        <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
+            <h1 class="fw-bold text-primary m-0">F<span class="text-secondary">oo</span>dy</h1>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="recipes.html" class="nav-item nav-link active">Recipes</a>
+                <a href="planner.html" class="nav-item nav-link active" id="planner_nav">Planner</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                    <div class="dropdown-menu m-0">
+                        <a href="blog.html" class="dropdown-item">Blog Grid</a>
+                        <a href="feature.html" class="dropdown-item">Our Features</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                        <a href="404.html" class="dropdown-item">404 Page</a>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact Us</a>
                 </div>
-                <div class="d-none d-lg-flex ms-2">
-                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
-                        <small class="fa fa-search text-body"></small>
-                    </a>
-                    <a id="user-link" class="btn-sm-square bg-white rounded-circle ms-3" href="login.html">
-                        <small class="fa fa-user text-body"></small>
-                    </a>
-                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
-                        <small class="fa fa-shopping-bag text-body"></small>
-                    </a>
-                </div>
+                <a href="contact.html" class="nav-item nav-link">Contact Us</a>
             </div>
-        </nav>
-    
+            <div class="d-none d-lg-flex ms-2">
+                <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                    <small class="fa fa-search text-body"></small>
+                </a>
+                <a id="user-link" class="btn-sm-square bg-white rounded-circle ms-3" href="login.html">
+                    <small class="fa fa-user text-body"></small>
+                </a>
+                <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                    <small class="fa fa-shopping-bag text-body"></small>
+                </a>
+            </div>
+        </div>
+    </nav>
+
     </div>
     <!-- Navbar End -->
 
@@ -97,15 +99,17 @@
         <div class="container">
             <div class="row g-0 gx-5 align-items-end">
                 <div class="col-lg-6">
-                    <div class="section-header text-start mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                    <div class="section-header text-start mb-5 wow fadeInUp" data-wow-delay="0.1s"
+                        style="max-width: 500px;">
                         <h1 class="display-5 mb-3">Our Recipes</h1>
                         <p>Enjoy an endless list of recipes to choose from!</p>
                     </div>
                 </div>
-                 <!-- Search, Sort, and Filter Section -->
-                 <div class="row mb-4">
+                <!-- Search, Sort, and Filter Section -->
+                <div class="row mb-4">
                     <div class="col-md-4">
-                        <input type="text" id="searchInput" class="form-control filter-input" placeholder="Search recipes...">
+                        <input type="text" id="searchInput" class="form-control filter-input"
+                            placeholder="Search recipes...">
                     </div>
                     <div class="col-md-3">
                         <select id="sortOptions" class="form-select filter-input">
@@ -114,25 +118,24 @@
                             <option value="name_desc">Z-A (Name)</option>
                             <option value="serving_size_asc">Small Serving Size</option>
                             <option value="serving_size_desc">Large Serving Size</option>
-                        </select>                        
+                        </select>
                     </div>
+                    <!-- Filter dropdown section -->
                     <div class="col-md-2">
                         <div class="dropdown">
                             <button class="btn btn-outline-primary border-2 dropdown-toggle filter-input" type="button"
                                 id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 Filter
                             </button>
-                            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                                <li><a class="dropdown-item"><input type="checkbox" value="low_calories"> Low Calories</a></li>
-                                <li><a class="dropdown-item"><input type="checkbox" value="vegetarian"> Vegetarian</a></li>
-                                <li><a class="dropdown-item"><input type="checkbox" value="gluten_free"> Gluten Free</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="filterDropdown" id="filterMenu">
+                                <!-- Filters will be dynamically populated here -->
                             </ul>
                         </div>
-                    </div>
+                    </div>                    
                     <div class="col-md-2">
                         <button id="searchButton" class="btn btn-primary">Search</button>
                     </div>
-                </div>                 
+                </div>
             </div>
             <div class="tab-content">
                 <div id="tab-1" class="tab-pane fade show p-0 active">
@@ -145,10 +148,10 @@
             <div class="col-12 text-center" id="paginationContainer">
                 <!-- Pagination buttons will be dynamically injected-->
             </div>
-                </div>
-                </div>
-            </div>
         </div>
+    </div>
+    </div>
+    </div>
     </div>
     <!-- Recipes End -->
 
@@ -158,7 +161,9 @@
             <div class="row g-5 align-items-center">
                 <div class="col-md-7 wow fadeIn" data-wow-delay="0.1s">
                     <h1 class="display-5 text-white mb-3">Visit Our Firm</h1>
-                    <p class="text-white mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos.</p>
+                    <p class="text-white mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam
+                        amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna
+                        dolore erat amet. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos.</p>
                 </div>
                 <div class="col-md-5 text-md-end wow fadeIn" data-wow-delay="0.5s">
                     <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" href="">Visit Now</a>
@@ -172,14 +177,16 @@
     <!-- Testimonial Start -->
     <div class="container-fluid bg-light bg-icon py-6">
         <div class="container">
-            <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s"
+                style="max-width: 500px;">
                 <h1 class="display-5 mb-3">Customer Review</h1>
                 <p>Tempor ut dolore lorem kasd vero ipsum sit eirmod sit. Ipsum diam justo sed rebum vero dolor duo.</p>
             </div>
             <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
                 <div class="testimonial-item position-relative bg-white p-5 mt-4">
                     <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
-                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos.
+                        Clita erat ipsum et lorem et sit.</p>
                     <div class="d-flex align-items-center">
                         <!-- <img class="flex-shrink-0 rounded-circle" src="img/testimonial-1.jpg" alt=""> -->
                         <div class="ms-3">
@@ -190,7 +197,8 @@
                 </div>
                 <div class="testimonial-item position-relative bg-white p-5 mt-4">
                     <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
-                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos.
+                        Clita erat ipsum et lorem et sit.</p>
                     <div class="d-flex align-items-center">
                         <!-- <img class="flex-shrink-0 rounded-circle" src="img/testimonial-2.jpg" alt=""> -->
                         <div class="ms-3">
@@ -201,7 +209,8 @@
                 </div>
                 <div class="testimonial-item position-relative bg-white p-5 mt-4">
                     <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
-                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos.
+                        Clita erat ipsum et lorem et sit.</p>
                     <div class="d-flex align-items-center">
                         <!-- <img class="flex-shrink-0 rounded-circle" src="img/testimonial-3.jpg" alt=""> -->
                         <div class="ms-3">
@@ -212,7 +221,8 @@
                 </div>
                 <div class="testimonial-item position-relative bg-white p-5 mt-4">
                     <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
-                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos.
+                        Clita erat ipsum et lorem et sit.</p>
                     <div class="d-flex align-items-center">
                         <!-- <img class="flex-shrink-0 rounded-circle" src="img/testimonial-4.jpg" alt=""> -->
                         <div class="ms-3">
@@ -233,12 +243,17 @@
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
                     <h1 class="fw-bold text-primary mb-4">F<span class="text-secondary">oo</span>dy</h1>
-                    <p>Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita</p>
+                    <p>Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed
+                        stet lorem sit clita</p>
                     <div class="d-flex pt-2">
-                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-square btn-outline-light rounded-circle me-0" href=""><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i
+                                class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i
+                                class="fab fa-youtube"></i></a>
+                        <a class="btn btn-square btn-outline-light rounded-circle me-0" href=""><i
+                                class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -259,8 +274,10 @@
                     <h4 class="text-light mb-4">Newsletter</h4>
                     <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                        <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text"
+                            placeholder="Your email">
+                        <button type="button"
+                            class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
                     </div>
                 </div>
             </div>
@@ -284,7 +301,8 @@
 
 
     <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i
+            class="bi bi-arrow-up"></i></a>
 
 
     <!-- JavaScript Libraries -->
@@ -304,20 +322,20 @@
         fetch('/check-session', {
             method: 'GET'
         })
-        .then(response => response.json())
-        .then(data => {
-            const userLink = document.getElementById('user-link');
-            if (data.loggedIn) {
-                // If logged in, change the link to the dashboard
-                userLink.href = 'dashboard.html';
-            } else {
-                // If not logged in, keep it as login
-                userLink.href = 'login.html';
-            }
-        })
-        .catch(error => {
-            console.error('Error checking session:', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                const userLink = document.getElementById('user-link');
+                if (data.loggedIn) {
+                    // If logged in, change the link to the dashboard
+                    userLink.href = 'dashboard.html';
+                } else {
+                    // If not logged in, keep it as login
+                    userLink.href = 'login.html';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking session:', error);
+            });
     </script>
 </body>
 

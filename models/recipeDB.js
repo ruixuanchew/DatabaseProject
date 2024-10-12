@@ -101,8 +101,9 @@ class RecipeDB {
 
     getRecipeBySearch(request, respond) {
         const searchQuery = request.query.query ? request.query.query.toLowerCase() : '';
-        const sortBy = request.query.sortBy || 'recipe_id'; // Default sort by 'name'
-        const sortDirection = request.query.sortDirection === 'DESC' ? 'DESC' : 'ASC'; // Default to 'ASC'
+        const filters = request.query.filters ? request.query.filters.split(',') : [];
+        const sortBy = request.query.sortBy || 'recipe_id';
+        const sortDirection = request.query.sortDirection === 'DESC' ? 'DESC' : 'ASC';
         const page = parseInt(request.query.page) || 1;
         const limit = 20;
         const offset = (page - 1) * limit;
@@ -112,16 +113,23 @@ class RecipeDB {
         const values = [];
     
         if (searchQuery) {
-            query +=  ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
+            query += ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
             values.push(`%${searchQuery}%`, `%${searchQuery}%`);
         }
-        
+    
+        // Handle filters
+        if (filters.length) {
+            filters.forEach(filter => {
+                query += ` AND LOWER(search_terms) LIKE ?`;
+                values.push(`%${filter.toLowerCase()}%`);
+            });
+        }
+    
         // Append sorting and pagination
-        query +=  ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
-        query +=  ` LIMIT 100 OFFSET ?`;
+        query += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        query += ` LIMIT 100 OFFSET ?`;
         values.push(offset);
     
-        // Log the SQL query and values
         console.log('Executing SQL Query:', query);
         console.log('With values:', values);
     
@@ -137,7 +145,7 @@ class RecipeDB {
             respond.status(200).json(results);  // Return the found recipes
         });
     }    
-
+    
     getRecipeById(request, respond) {
         const recipeId = request.params.id;
         const sql = "SELECT * FROM recipes WHERE recipe_id = ?";
