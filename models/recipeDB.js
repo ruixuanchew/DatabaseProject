@@ -58,46 +58,37 @@ class RecipeDB {
         const page = parseInt(request.params.page) || 1;
         const limit = parseInt(request.params.limit) || 20;
         const offset = (page - 1) * limit;
-
+    
         const searchQuery = request.query.query ? request.query.query.toLowerCase() : ''; // Optional search query
         const sortBy = request.query.sortBy || 'recipe_id'; // Default sorting by recipe_id
         const sortDirection = request.query.sortDirection === 'DESC' ? 'DESC' : 'ASC'; // Default sort direction
-
+    
         // Construct the SQL query
         let sql = `SELECT * FROM recipes WHERE 1=1`;
         const values = [];
-
+    
         // If a search query exists, add filtering condition
         if (searchQuery) {
-            sql += ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
+            sql +=  ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
             values.push(`%${searchQuery}%`, `%${searchQuery}%`);
         }
-
+    
         // Append sorting and pagination
-        if (sortBy === 'serving_size') {
-            // Sorting by numeric value extracted from 'serving_size'
-            sql += ` ORDER BY CAST(SUBSTRING_INDEX(serving_size, ' ', 1) AS UNSIGNED) ${sortDirection}`;
-        } else {
-            sql += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
-        }
-
-        // Append sorting and pagination
-        sql += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
-        sql += ` LIMIT 100 OFFSET ?`;
+        sql +=  ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        sql +=  ` LIMIT 100 OFFSET ?`;
         values.push(offset);
-
+    
         // Log the constructed query and values
         console.log('Executing SQL Query:', sql);
         console.log('With values:', values);
-
+    
         db.query(sql, values, (error, result) => {
             if (error) {
                 return respond.status(500).json({ error: "Database query error" });
             }
             respond.json(result);
         });
-    }
-
+    }    
     getRecipeIdAndName(request, respond) {
         const sql = "SELECT recipe_id, name FROM recipes";
         db.query(sql, (error, result) => {
@@ -115,44 +106,37 @@ class RecipeDB {
         const page = parseInt(request.query.page) || 1;
         const limit = 20;
         const offset = (page - 1) * limit;
-
+    
         // Construct the query to handle both search and sort
         let query = `SELECT * FROM recipes WHERE 1=1`;
         const values = [];
-
+    
         if (searchQuery) {
-            query += ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
+            query +=  ` AND (LOWER(name) LIKE ? OR LOWER(search_terms) LIKE ?)`;
             values.push(`%${searchQuery}%`, `%${searchQuery}%`);
         }
-
+        
         // Append sorting and pagination
-        if (sortBy === 'serving_size') {
-            query += ` ORDER BY CAST(SUBSTRING_INDEX(serving_size, ' ', 1) AS UNSIGNED) ${sortDirection}`;
-        } else {
-            query += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
-        }
-
-        // Append sorting and pagination
-        query += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
-        query += ` LIMIT 100 OFFSET ?`;
+        query +=  ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
+        query +=  ` LIMIT 100 OFFSET ?`;
         values.push(offset);
-
+    
         // Log the SQL query and values
         console.log('Executing SQL Query:', query);
         console.log('With values:', values);
-
+    
         db.query(query, values, (error, results) => {
             if (error) {
                 return respond.status(500).json({ error: 'Error searching and sorting recipes' });
             }
-
+    
             if (results.length === 0) {
                 return respond.status(404).json({ message: 'No recipes found' });
             }
-
+    
             respond.status(200).json(results);  // Return the found recipes
         });
-    }
+    }    
 
     getRecipeById(request, respond) {
         const recipeId = request.params.id;

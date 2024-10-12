@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const page = parseInt(urlParams.get('page')) || 1; // Get the page number or default to 1
     const sortBy = urlParams.get('sortBy'); // Get sortBy parameter from the URL
     const sortDirection = urlParams.get('sortDirection'); // Get sortDirection from the URL
+    checkUser();
 
     currentPage = page; // Set the current page based on URL parameter
 
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchButton').addEventListener('click', function (event) {
         searchRecipes();         // Execute the search
     });
-    document.getElementById('sortOptions').addEventListener('change', function() {
+    document.getElementById('sortOptions').addEventListener('change', function () {
         const selectedSort = this.value;
 
         // If "Default" is selected
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let sortBy = 'default';
         let sortDirection = 'ASC';
-    
+
         // Update sortBy and sortDirection based on selection
         switch (selectedSort) {
             case 'name_asc':
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sortBy = null; // For "Default", reset to null
                 break;
         }
-    
+
         // Update URL parameters only if sortBy is not null
         const urlParams = new URLSearchParams(window.location.search);
         if (sortBy) {
@@ -79,12 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             urlParams.delete('sortBy'); // Remove sorting params if "Default" is selected
             urlParams.delete('sortDirection');
         }
-    
+
         const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
         history.pushState({ sortBy, sortDirection, page: currentPage }, '', newUrl); // Update the URL without reloading
 
         getRecipes();
-        
+
     });
 
 });
@@ -147,6 +148,7 @@ function displayRecipes(page) {
     const startIndex = (page - 1) * recipesPerPage;
     const endIndex = Math.min(startIndex + recipesPerPage, recipes.length);
     const recipesToDisplay = recipes.slice(startIndex, endIndex);
+    console.log('Recipes to display:', recipesToDisplay); // Log the recipes to be displayed
 
     if (recipesToDisplay.length === 0) {
         list.innerHTML = '<p>No recipes found matching your search.</p>'; // Inform the user if no recipes found
@@ -221,7 +223,7 @@ function setupPagination() {
             // Update pagination display
             setupPagination();
 
-             // Update the URL with the new page number
+            // Update the URL with the new page number
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('page', pageNum); // Set the new page parameter
             const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
@@ -320,7 +322,7 @@ function searchRecipes(query) {
 
     // Combine search and sort when fetching the recipes
     let fetchUrl = `/search?query=${encodeURIComponent(searchQuery)}&page=${currentPage}`;
-    
+
     // Include sorting parameters if they exist
     if (sortBy) {
         fetchUrl += `&sortBy=${sortBy}&sortDirection=${sortDirection}`;
@@ -332,6 +334,7 @@ function searchRecipes(query) {
     fetch(fetchUrl)
         .then(response => response.json())
         .then(data => {
+            console.log('Search response data:', data); // Log the server response
             recipes = data; // Store fetched recipes
             displayRecipes(currentPage); // Display recipes for the current page
             setupPagination(); // Setup pagination buttons
@@ -347,9 +350,9 @@ function searchRecipes(query) {
         urlParams.set('sortBy', sortBy); // Retain the sortBy parameter
         urlParams.set('sortDirection', sortDirection); // Retain the sortDirection parameter
         const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-    history.pushState({ query: searchQuery, page: currentPage, sortBy, sortDirection }, '', newUrl); // Update the URL without reloading
+        history.pushState({ query: searchQuery, page: currentPage, sortBy, sortDirection }, '', newUrl); // Update the URL without reloading
     }
-    
+
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     history.pushState({ query: searchQuery, page: currentPage }, '', newUrl); // Update the URL without reloading
 }
@@ -393,5 +396,29 @@ function deleteRecipe() {
         .then(() => {
             getRecipes();
             document.getElementById('recipeForm').reset();
+        });
+}
+
+function checkUser() {
+    fetch('/check-session', {
+        method: 'GET'
+    })
+        .then(response => response.json())
+        .then(data => {
+            const plannerNav = document.getElementById('planner_nav');
+
+            if (data.loggedIn) {
+                // User is logged in, set the href to planner.html
+                plannerNav.setAttribute('href', 'planner.html');
+                currentUser = data.user.id; // Store the current user ID
+                console.log(currentUser);
+            } else {
+                // User is not logged in, set the href to login.html
+                plannerNav.setAttribute('href', 'login.html');
+                console.error('User not logged in');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking session:', error);
         });
 }
