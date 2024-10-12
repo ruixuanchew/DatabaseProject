@@ -71,21 +71,21 @@
 Admin: Register account with email = admin@admin.com, to access admin dashboard
 
 # Understanding the code
-# 1. Query Codes 
+## 1. Query Codes 
 - /models/: Contains our queries for different tables (e.g. nutritionDB.js, plannerDB.js, recipeDB.js, userDB.js)
 
-# 2. API Calls
+## 2. API Calls
 - /routes/: Contains the API call to our queries (e.g. routePlanner.js, routeNutrition.js, routeRecipe.js, routeUser.js)
 
-# 3. Frontend Call of Queries
+## 3. Frontend Call of Queries
 - /public/js/: Contains most of our frontend communication with database. It also contains dynamic loading and other logic.
 
-# 4. Frontend Design
+## 4. Frontend Design
 - /public/: HTML files contain all our design for website
 - /public/css/styles.css: Contains our styling of website
 
-# 5. Server Logic
+## 5. Server Logic
 - server.js: Contains route declaration, sessions, port details, and more.
 
-# 6. Database Logic
+## 6. Database Logic
 - /js/db.js: Contains details required to connect to database 
