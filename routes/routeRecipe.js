@@ -16,12 +16,6 @@ function routeRecipe(app) {
     .put(recipeDBObject.updateRecipe)
     .delete(recipeDBObject.deleteRecipe);
 
-  app.route('/recipes/:page/:limit')
-    .get(recipeDBObject.getRecipesByPage);
-
-  app.route('/recipes/count')
-    .get(recipeDBObject.countAllRecipes);
-
   app.route('/search')
     .get(recipeDBObject.getRecipeBySearch);
 

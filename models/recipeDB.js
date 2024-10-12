@@ -6,49 +6,10 @@ const Recipe = require('./recipe');
 class RecipeDB {
 
     getAllRecipes(request, respond) {
-        const sql = "SELECT * FROM recipes LIMIT 100";
+        const sql = "SELECT * FROM recipes";
         db.query(sql, (error, result) => {
             if (error) {
                 throw error;
-            }
-            respond.json(result);
-        });
-    }
-
-    // For future reference when optimising 
-    countAllRecipes(request, respond) {
-        const sql = "SELECT COUNT(*) as total FROM recipes";
-        db.query(sql, (error, result) => {
-            if (error) {
-                return respond.status(500).json({ error: "Database query error" });
-            }
-            respond.json(result[0].total); // Send back the total count
-        });
-    }
-
-    // Do in the future for optimisation (:D)
-    getRecipesByPage(request, respond) {
-        console.log('Gets here');
-        const page = parseInt(request.params.page) || 1;
-        const limit = parseInt(request.params.limit) || 20;
-        const offset = (page - 1) * limit;
-        console.log(page, limit);
-
-        const sql = `
-            WITH recipe_pages AS (
-                SELECT *, ROW_NUMBER() OVER (ORDER BY recipe_id) as row_num
-                FROM recipes
-            )
-            SELECT *
-            FROM recipe_pages
-            WHERE row_num BETWEEN ? AND ?;`;
-
-        const startRow = offset + 1;
-        const endRow = offset + limit;
-
-        db.query(sql, [startRow, endRow], (error, result) => {
-            if (error) {
-                return respond.status(500).json({ error: "Database query error" });
             }
             respond.json(result);
         });
@@ -81,7 +42,7 @@ class RecipeDB {
         } else {
             sql += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
         }
-        sql += ` LIMIT 100 OFFSET ?`;
+        // sql += ` LIMIT 100 OFFSET ?`;
         values.push(offset);
 
         // Log the constructed query and values
@@ -138,7 +99,7 @@ class RecipeDB {
         } else {
             query += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
         }
-        query += ` LIMIT 100 OFFSET ?`;
+        // query += ` LIMIT 100 OFFSET ?`;
         values.push(offset);
 
         console.log('Executing SQL Query:', query);

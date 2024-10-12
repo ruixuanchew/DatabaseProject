@@ -358,7 +358,6 @@ function getRecipes() {
         .then(response => response.json())
         .then(data => {
             recipes = data;
-            console.log('recipes', recipes);
             populateRecipeDropdown(recipes);
         })
         .catch(error => console.error('Error fetching recipes:', error));
@@ -575,8 +574,6 @@ function calculateTotalMeals() {
             const mealsToday = plans.find(plan => plan.date === currentDateDisplayed);
 
             mealElem.textContent = mealsToday ? mealsToday.total_plans : 0;
-
-            console.log('Meals today:', mealsToday ? mealsToday.total_plans : 'No meals today');
         })
         .catch(error => console.error('Error fetching plans:', error));
 }
