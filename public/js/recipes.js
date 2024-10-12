@@ -10,9 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const page = parseInt(urlParams.get('page')) || 1; // Get the page number or default to 1
     const sortBy = urlParams.get('sortBy'); // Get sortBy parameter from the URL
     const sortDirection = urlParams.get('sortDirection'); // Get sortDirection from the URL
+    const filters = urlParams.getAll('filters'); // Get filters from the URL
     checkUser();
 
     currentPage = page; // Set the current page based on URL parameter
+
+    // If filters exist in the URL, populate activeFilters
+    activeFilters = filters;
 
     if (sortBy && sortDirection) {
         // Retain the selected sort option in the dropdown
@@ -89,6 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
+    // Restore filters from URL and check corresponding boxes
+    if (filters.length > 0) {
+        activeFilters = filters;
+        updateFilterOptions(recipes, filters);
+        getRecipes(); // Fetch recipes again based on the updated filters
+    }
+
 });
 
 // Future for optimisation 
@@ -135,7 +146,7 @@ function getRecipes() {
             recipes = data; // Store fetched recipes
             displayRecipes(currentPage); // Display them on the page
             setupPagination(); // Setup pagination
-            updateFilterOptions(recipes);
+            updateFilterOptions(recipes, filters);
         })
         .catch(error => console.error('Error fetching recipes:', error));
 }
@@ -275,6 +286,35 @@ function setupPagination() {
     }
 }
 
+function updateFilterOptions(recipes, filters) {
+    const filterMenu = document.getElementById('filterMenu');
+    filterMenu.innerHTML = ''; // Clear existing filter options
+
+    // Get unique search terms from the recipes and create filter options
+    const searchTermSet = new Set();
+    recipes.forEach(recipe => {
+        if (recipe.search_terms) {
+            recipe.search_terms.split(',').forEach(term => searchTermSet.add(term.trim()));
+        }
+    });
+
+    // Convert the Set to an Array and sort it alphabetically
+    const sortedTerms = Array.from(searchTermSet).sort((a, b) => a.localeCompare(b));
+
+    // Create checkboxes for each unique, sorted search term
+    sortedTerms.forEach(term => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a class="dropdown-item"><input type="checkbox" class="filter-checkbox" value="${term}"> ${term}</a>`;
+        filterMenu.appendChild(li);
+    });
+
+    // Retain checked state for filters from URL
+    filters.forEach(filter => {
+        const checkbox = document.querySelector(`.filter-checkbox[value="${filter}"]`);
+        if (checkbox) checkbox.checked = true;
+    });
+}
+
 // Function to populate filter menu based on searched recipes
 function useFilterOptions() {
     const selectedFilters = [...document.querySelectorAll('.filter-checkbox:checked')]
@@ -292,30 +332,10 @@ function useFilterOptions() {
     history.pushState({}, '', newUrl); // Update the URL without reloading
 
     // Fetch and display filtered recipes
-    fetchFilteredRecipes(selectedFilters);
+    filterRecipes(selectedFilters);
 }
 
-function updateFilterOptions(recipes) {
-    const filterMenu = document.getElementById('filterMenu');
-    filterMenu.innerHTML = ''; // Clear existing filter options
-
-    // Get unique search terms from the recipes and create filter options
-    const searchTermSet = new Set();
-    recipes.forEach(recipe => {
-        if (recipe.search_terms) {
-            recipe.search_terms.split(',').forEach(term => searchTermSet.add(term.trim()));
-        }
-    });
-
-    // Create checkboxes for each unique search term
-    searchTermSet.forEach(term => {
-        const li = document.createElement('li');
-        li.innerHTML = `<a class="dropdown-item"><input type="checkbox" value="${term}"> ${term}</a>`;
-        filterMenu.appendChild(li);
-    });
-}
-
-function filterRecipes() {
+function filterRecipes(selectedFilters) {
     const query = document.getElementById('searchInput').value.trim();
     const fetchUrl = `/search?query=${encodeURIComponent(query)}&page=${currentPage}`;
 
@@ -401,6 +421,7 @@ function searchRecipes(query) {
             recipes = data; // Store fetched recipes
             displayRecipes(currentPage); // Display recipes for the current page
             setupPagination(); // Setup pagination buttons
+            updateFilterOptions(recipes, activeFilters);
 
             // Update the URL parameters
             urlParams.set('query', searchQuery);
