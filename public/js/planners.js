@@ -275,11 +275,33 @@ function getPlans() {
         .catch(error => console.error('Error fetching plans:', error));
 }
 
-// Handles add plan
+// Function to handle adding a plan
 function addPlan(time) {
     const currentDayElem = document.getElementById('currentDay').textContent;
 
-    // Create new JSON for adding of values
+    // Check if a recipe has been selected
+    if (!selectedRecipeId) {
+        // Highlight the recipe dropdown in red
+        const recipeDropdown = document.getElementById('recipeSelect');
+        recipeDropdown.style.border = '2px solid red';
+        
+        // Display an error message
+        const errorMessage = document.getElementById('recipeError');
+        errorMessage.textContent = 'Please select a recipe';
+        errorMessage.style.display = 'block'; // Ensure it's visible
+
+        return; // Stop the function if no recipe is selected
+    }
+
+    // Reset any previous error styles if a recipe is selected
+    const recipeDropdown = document.getElementById('recipeSelect');
+    recipeDropdown.style.border = ''; // Remove red border
+
+    const errorMessage = document.getElementById('recipeError');
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none';
+
+    // Create new JSON for adding the plan
     const plan = {
         user_id: currentUser,
         recipe_id: selectedRecipeId,
@@ -289,6 +311,7 @@ function addPlan(time) {
         date: currentDayElem
     };
 
+    // Fetch request to add the plan
     fetch('/planners', {
         method: 'POST',
         headers: {
@@ -305,6 +328,7 @@ function addPlan(time) {
         selectedRecipeId = null;
     });
 }
+
 
 // Check if user is logged in
 function checkedUser(){
@@ -327,8 +351,6 @@ function checkedUser(){
         console.error('Error checking session:', error);
     });
 }
-
-
 
 // Get recipes by name and id for the dropdown 
 function getRecipes() {
