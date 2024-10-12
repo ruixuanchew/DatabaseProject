@@ -40,11 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('sortOptions').addEventListener('change', function () {
         const selectedSort = this.value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query'); // Get the search query
 
         // If "Default" is selected
         if (selectedSort === 'default') {
             this.value = 'default';
-            const newUrl = `${window.location.pathname}`;
+            // Remove only sortBy and sortDirection, but keep the query
+            urlParams.delete('sortBy');
+            urlParams.delete('sortDirection');
+
+            // If a query exists, make sure it's preserved in the URL
+            if (query) {
+                urlParams.set('query', query); // Ensure query remains in the URL
+            }
+
+            const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
             history.pushState({}, '', newUrl); // Remove all parameters
             getRecipes(); // Reset the displayed recipes
             return;
@@ -77,13 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Update URL parameters only if sortBy is not null
-        const urlParams = new URLSearchParams(window.location.search);
         if (sortBy) {
             urlParams.set('sortBy', sortBy);
             urlParams.set('sortDirection', sortDirection);
-        } else {
-            urlParams.delete('sortBy'); // Remove sorting params if "Default" is selected
-            urlParams.delete('sortDirection');
+        }
+
+        // If a query exists, ensure it is still part of the URL
+        if (query) {
+            urlParams.set('query', query);
         }
 
         const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
