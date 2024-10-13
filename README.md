@@ -10,11 +10,12 @@
 
 # Setting up:
   1. Create a database in your local machine (e.g. MariaDB or mySQL Workbench)
-  2. Create a .env file in root folder with the following fields 
+  2. Create a .env file in root folder with the following fields and replace them with your database fields.
   - DB_HOST = hostname
   - DB_USER = username
   - DB_PASS = password
   - DB_NAME = database name
+  3. Edit the .sql such that the file paths for recipes_cleaned.csv and nutrients_csvfile.csv match your respective paths
   3. Execute the .sql file in database
 
 # Running the Application:
