@@ -6,10 +6,10 @@
 # Setting up:
   1. Create a database in your local machine (e.g. MariaDB or mySQL Workbench)
   2. Create a .env file in root folder with the following fields 
-  - DB_HOST = <<hostname>>
-  - DB_USER = <<username>>
-  - DB_PASS = <<password>>
-  - DB_NAME = <<database name>>
+  - DB_HOST = hostname
+  - DB_USER = username
+  - DB_PASS = password
+  - DB_NAME = database name
   3. Execute the .sql file in database
 
 # Running the Application:
