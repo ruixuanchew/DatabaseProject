@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Check if user is admin
             if (data.user.email === 'admin@admin.com') {
                 document.getElementById('admin-crud').style.display = 'block'; // Show CRUD table
-                loadRecipes(); // Load recipes for CRUD table
+                loadRecipes(1); // Load recipes for CRUD table
             } else {
                 // Show the username edit option for non-admin users
                 document.getElementById('edit-username-section').style.display = 'block';
@@ -54,31 +54,66 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error('Error updating username:', error));
     });
 
+    var current_page = 1;
+    var records_per_page = 5;
+
+    var totalrecipe = 0;
+
     // Load all recipes on page load
-    function loadRecipes() {
+    function loadRecipes(page) {
         fetch('/recipes', { method: 'GET' })
             .then(response => response.json())
             .then(recipes => {
+
+                totalrecipe = recipes.length;
+
                 const recipeTableBody = document.getElementById('recipe-table-body');
+
+                var btn_next = document.getElementById("btn_next");
+                var btn_prev = document.getElementById("btn_prev");
+                var page_span = document.getElementById("page");
+
+                // Validate page
+                if (page < 1) page = 1;
+                if (page > numPages(totalrecipe)) page = numPages(totalrecipe);
+
                 recipeTableBody.innerHTML = ''; // Clear the table
-                recipes.forEach(recipe => {
+                
+                for (var i = (page-1) * records_per_page; i < (page * records_per_page) && i < recipes.length; i++){
                     const row = document.createElement('tr');
                     row.innerHTML = 
-                        `<td>${recipe.recipe_id}</td>
-                        <td>${recipe.name}</td>
-                        <td>${recipe.description}</td>
-                        <td>${recipe.ingredients}</td>
-                        <td>${recipe.serving_size}</td>
-                        <td>${recipe.servings}</td>
-                        <td>${recipe.steps}</td>
-                        <td>${recipe.tags}</td>
-                        <td>${recipe.search_terms}</td>
+                        `<td>${recipes[i].recipe_id}</td>
+                        <td>${recipes[i].name}</td>
+                        <td>${recipes[i].description}</td>
+                        <td>${recipes[i].ingredients}</td>
+                        <td>${recipes[i].serving_size}</td>
+                        <td>${recipes[i].servings}</td>
+                        <td>${recipes[i].steps}</td>
+                        <td>${recipes[i].tags}</td>
+                        <td>${recipes[i].search_terms}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm edit-button" data-recipe-id="${recipe.recipe_id}">Edit</button>
-                            <button class="btn btn-danger btn-sm delete-button" data-recipe-id="${recipe.recipe_id}">Delete</button>
+                            <button class="btn btn-warning btn-sm edit-button" data-recipe-id="${recipes[i].recipe_id}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-button" data-recipe-id="${recipes[i].recipe_id}">Delete</button>
                         </td>`;
                     recipeTableBody.appendChild(row);
-                });
+                }
+
+                page_span.innerHTML = page;
+
+                if (page == 1) {
+                    btn_prev.style.visibility = "hidden";
+                } else {
+                    btn_prev.style.visibility = "visible";
+                }
+
+                if (page == numPages(totalrecipe)) {
+                    btn_next.style.visibility = "hidden";
+                } else {
+                    btn_next.style.visibility = "visible";
+                }
+
+
+
                 // Attach event listeners to the edit and delete buttons
                 document.querySelectorAll('.edit-button').forEach(button => {
                     button.addEventListener('click', function() {
@@ -93,14 +128,45 @@ document.addEventListener("DOMContentLoaded", () => {
                         deleteRecipe(recipeId);
                     });
                 });
+
             })
             .catch(error => console.error('Error loading recipes:', error));
+    }
+
+    function prevPage()
+    {
+        if (current_page > 1) {
+            current_page--;
+            loadRecipes(current_page);
+        }
+    }
+
+    function nextPage()
+    {
+        if (current_page < numPages(totalrecipe)) {
+            current_page++;
+            loadRecipes(current_page);
+        }
+    }
+
+
+    function numPages(number)
+    {
+        return Math.ceil(number / records_per_page);
     }
 
     // Open the form to add or edit a recipe
     document.getElementById('add-button').onclick = function() {
         openRecipeForm();
     }
+
+    document.getElementById('btn_prev').onclick = function() {
+        prevPage();
+    }
+    document.getElementById('btn_next').onclick = function() {
+        nextPage(totalrecipe);
+    }
+
     function openRecipeForm(recipe = null) {
         document.getElementById('overlay').style.display = 'block'; // Show overlay
         document.getElementById('recipeFormModal').style.display = 'block'; // Show the form
@@ -158,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(result => {
             alert("Recipe updated!");
             closeRecipeForm();
-            loadRecipes(); // Reload recipes after saving
+            loadRecipes(1); // Reload recipes after saving
         })
         .catch(error => console.error('Error saving recipe:', error));
     });
@@ -178,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(response => response.json())
                 .then(result => {
                     alert("Recipe deleted!");
-                    loadRecipes();
+                    loadRecipes(1);
                 })
                 .catch(error => console.error('Error deleting recipe:', error));
         }
