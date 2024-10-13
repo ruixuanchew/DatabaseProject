@@ -23,6 +23,7 @@ class RecipeDB {
         const searchQuery = request.query.query ? request.query.query.toLowerCase() : ''; // Optional search query
         const sortBy = request.query.sortBy || 'recipe_id'; // Default sorting by recipe_id
         const sortDirection = request.query.sortDirection === 'DESC' ? 'DESC' : 'ASC'; // Default sort direction
+        const filters = request.query.filters ? request.query.filters.split(',') : [];
 
         // Construct the SQL query
         let sql = `SELECT *, 
@@ -36,13 +37,21 @@ class RecipeDB {
             values.push(`%${searchQuery}%`, `%${searchQuery}%`);
         }
 
+        // Handle filters
+        if (filters.length) {
+            filters.forEach(filter => {
+                sql += ` AND LOWER(search_terms) LIKE ?`;
+                values.push(`%${filter.toLowerCase()}%`);
+            });
+        }
+
         // Append sorting and pagination based on serving_mass if sorting by serving_size
         if (sortBy === 'serving_size') {
             sql += ` ORDER BY serving_mass ${sortDirection}`;
         } else {
             sql += ` ORDER BY ${db.escapeId(sortBy)} ${sortDirection}`;
         }
-        // sql += ` LIMIT 100 OFFSET ?`;
+        //sql += ` LIMIT 100 OFFSET ?`;
         values.push(offset);
 
         // Log the constructed query and values
@@ -56,6 +65,7 @@ class RecipeDB {
             respond.json(result);
         });
     }
+
     getRecipeIdAndName(request, respond) {
         const sql = "SELECT recipe_id, name FROM recipes";
         db.query(sql, (error, result) => {
