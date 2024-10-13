@@ -114,20 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// Future for optimisation 
-// function getRecipes(){
-//     fetch(`/recipes/${currentPage}/${recipesPerPage}`, {
-//         method: 'GET'
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         recipes = data; // Store fetched recipes
-//         console.log(recipes);
-//         displayRecipes(currentPage);
-//         setupPagination();
-//     })
-//     .catch(error => console.error('Error fetching recipes:', error));
-// }
 function getRecipes() {
     const urlParams = new URLSearchParams(window.location.search);
     const sortBy = urlParams.get('sortBy') || null; // Get sortBy from URL
@@ -177,7 +163,6 @@ function displayRecipes(page) {
     const startIndex = (page - 1) * recipesPerPage;
     const endIndex = Math.min(startIndex + recipesPerPage, recipes.length);
     const recipesToDisplay = recipes.slice(startIndex, endIndex);
-    console.log('Recipes to display:', recipesToDisplay); // Log the recipes to be displayed
 
     if (recipesToDisplay.length === 0) {
         list.innerHTML = '<p>No recipes found matching your search.</p>'; // Inform the user if no recipes found
@@ -368,33 +353,6 @@ function filterRecipes(selectedFilters) {
         });
 }
 
-function addRecipe() {
-    const recipe = {
-        name: document.getElementById('recipeName').value,
-        description: document.getElementById('recipeDescription').value,
-        ingredients: document.getElementById('recipeIngredients').value,
-        ingredients_raw: document.getElementById('recipeIngredientsRaw').value,
-        serving_size: document.getElementById('recipeServingSize').value,
-        servings: document.getElementById('recipeServings').value,
-        steps: document.getElementById('recipeSteps').value,
-        tags: document.getElementById('recipeTags').value,
-        search_terms: document.getElementById('recipeSearchTerms').value
-    };
-
-    fetch('/recipes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(recipe)
-    })
-        .then(response => response.json())
-        .then(() => {
-            getRecipes();
-            document.getElementById('recipeForm').reset();
-        });
-}
-
 function searchRecipes(query) {
     const searchInput = document.getElementById('searchInput').value.trim();
     const searchQuery = query || searchInput; // Use the query from URL or input field
@@ -429,7 +387,6 @@ function searchRecipes(query) {
     fetch(fetchUrl)
         .then(response => response.json())
         .then(data => {
-            console.log('Search response data:', data); // Log the server response
             recipes = data; // Store fetched recipes
             displayRecipes(currentPage); // Display recipes for the current page
             setupPagination(); // Setup pagination buttons
@@ -465,47 +422,6 @@ function searchRecipes(query) {
     history.pushState({ query: searchQuery, page: currentPage }, '', newUrl); // Update the URL without reloading
 }
 
-function updateRecipe() {
-    const recipeId = document.getElementById('recipeId').value;
-    const recipe = {
-        name: document.getElementById('recipeName').value,
-        description: document.getElementById('recipeDescription').value,
-        ingredients: document.getElementById('recipeIngredients').value,
-        ingredients_raw: document.getElementById('recipeIngredientsRaw').value,
-        serving_size: document.getElementById('recipeServingSize').value,
-        servings: document.getElementById('recipeServings').value,
-        steps: document.getElementById('recipeSteps').value,
-        tags: document.getElementById('recipeTags').value,
-        search_terms: document.getElementById('recipeSearchTerms').value
-    };
-
-    fetch(`/recipes/${recipeId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(recipe)
-    })
-        .then(response => response.json())
-        .then(() => {
-            getRecipes();
-            document.getElementById('recipeForm').reset();
-        });
-}
-
-function deleteRecipe() {
-    const recipeId = document.getElementById('recipeId').value;
-
-    fetch(`/recipes/${recipeId}`, {
-        method: 'DELETE'
-    })
-        .then(response => response.json())
-        .then(() => {
-            getRecipes();
-            document.getElementById('recipeForm').reset();
-        });
-}
-
 function checkUser() {
     fetch('/check-session', {
         method: 'GET'
@@ -513,16 +429,16 @@ function checkUser() {
         .then(response => response.json())
         .then(data => {
             const plannerNav = document.getElementById('planner_nav');
-
+            const userLink = document.getElementById('user-link');
             if (data.loggedIn) {
                 // User is logged in, set the href to planner.html
                 plannerNav.setAttribute('href', 'planner.html');
+                userLink.setAttribute('href', 'dashboard.html');
                 currentUser = data.user.id; // Store the current user ID
-                console.log(currentUser);
             } else {
                 // User is not logged in, set the href to login.html
                 plannerNav.setAttribute('href', 'login.html');
-                console.error('User not logged in');
+                userLink.setAttribute('href', 'login.html');
             }
         })
         .catch(error => {
